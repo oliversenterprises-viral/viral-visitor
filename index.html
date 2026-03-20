@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Viral Refer • Earn Rewards</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { content: [], theme: { extend: {} } }
-    </script>
+    <script>tailwind.config = { content: [], theme: { extend: {} } }</script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -35,94 +32,21 @@
         @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
         .admin-tab { padding: 1.25rem 2rem; font-weight: 600; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .admin-tab-active { border-bottom: 3px solid rgb(var(--primary)); color: rgb(var(--primary)); }
-
-        /* IMPROVED REFERRAL LINK HIGHLIGHT */
-        .highlight-glow {
-            animation: glowPulse 2.2s ease-in-out forwards;
-            box-shadow: 0 0 0 8px rgb(134 76 255 / 0.6);
-        }
-        @keyframes glowPulse {
-            0%   { box-shadow: 0 0 0 0 rgb(134 76 255 / 0.9); }
-            25%  { box-shadow: 0 0 0 16px rgb(134 76 255 / 0.5); }
-            70%  { box-shadow: 0 0 0 8px rgb(134 76 255 / 0.0); }
-            100% { box-shadow: 0 0 0 0 rgb(134 76 255 / 0.0); }
-        }
-        .copied-badge {
-            position: absolute;
-            top: -12px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 10px;
-            border-radius: 9999px;
-            box-shadow: 0 10px 15px -3px rgb(16 185 129 / 0.3);
-            animation: badgePop 0.4s ease forwards;
-            pointer-events: none;
-        }
-        @keyframes badgePop {
-            0% { transform: scale(0.6) translateY(10px); opacity: 0; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        /* === NEW: GET MY REFERRAL LINK IMPROVEMENTS === */
-        .get-link-btn {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-        }
-        .get-link-btn::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -150%;
-            width: 60%;
-            height: 200%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-            transition: 0.7s;
-        }
-        .get-link-btn:hover::after {
-            left: 200%;
-        }
-        .get-link-btn.loading {
-            pointer-events: none;
-        }
-        .get-link-btn.success {
-            background: #10b981 !important;
-            color: white !important;
-            transform: scale(1.05);
-        }
-        .qr-pulse {
-            animation: qrPop 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards;
-        }
-        @keyframes qrPop {
-            0%   { transform: scale(0.85) rotate(-8deg); }
-            40%  { transform: scale(1.15) rotate(6deg); }
-            70%  { transform: scale(0.98) rotate(-3deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-        .floating-ready {
-            position: fixed;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #22c55e;
-            text-shadow: 0 0 20px #22c55e;
-            pointer-events: none;
-            z-index: 9999;
-            animation: floatReady 2.2s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
-        }
-        @keyframes floatReady {
-            0%   { transform: translateY(30px) scale(0.6); opacity: 0; }
-            20%  { transform: translateY(-30px) scale(1.15); opacity: 1; }
-            80%  { transform: translateY(-140px) scale(1); }
-            100% { transform: translateY(-160px) scale(0.9); opacity: 0; }
-        }
+        .highlight-glow { animation: glowPulse 2.2s ease-in-out forwards; box-shadow: 0 0 0 8px rgb(134 76 255 / 0.6); }
+        @keyframes glowPulse { 0% { box-shadow: 0 0 0 0 rgb(134 76 255 / 0.9); } 25% { box-shadow: 0 0 0 16px rgb(134 76 255 / 0.5); } 70% { box-shadow: 0 0 0 8px rgb(134 76 255 / 0.0); } 100% { box-shadow: 0 0 0 0 rgb(134 76 255 / 0.0); } }
+        .get-link-btn { position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
+        .get-link-btn::after { content: ''; position: absolute; top: -50%; left: -150%; width: 60%; height: 200%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent); transition: 0.7s; }
+        .get-link-btn:hover::after { left: 200%; }
+        .get-link-btn.loading { pointer-events: none; }
+        .get-link-btn.success { background: #10b981 !important; color: white !important; transform: scale(1.05); }
+        .qr-pulse { animation: qrPop 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+        @keyframes qrPop { 0% { transform: scale(0.85) rotate(-8deg); } 40% { transform: scale(1.15) rotate(6deg); } 70% { transform: scale(0.98) rotate(-3deg); } 100% { transform: scale(1) rotate(0deg); } }
+        .floating-ready { position: fixed; font-size: 1.1rem; font-weight: 700; color: #22c55e; text-shadow: 0 0 20px #22c55e; pointer-events: none; z-index: 9999; animation: floatReady 2.2s cubic-bezier(0.25,0.46,0.45,0.94) forwards; }
+        @keyframes floatReady { 0% { transform: translateY(30px) scale(0.6); opacity: 0; } 20% { transform: translateY(-30px) scale(1.15); opacity: 1; } 80% { transform: translateY(-140px) scale(1); } 100% { transform: translateY(-160px) scale(0.9); opacity: 0; } }
     </style>
 </head>
 <body class="tail-container bg-zinc-950 text-zinc-100 min-h-screen">
 
-<!-- NAVBAR -->
 <nav class="border-b border-white/10 bg-zinc-950/80 backdrop-blur-lg fixed w-full z-50">
     <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -132,16 +56,12 @@
         <div class="flex items-center gap-8 text-sm font-medium">
             <a href="#how" class="hover:text-violet-400 transition-colors">How it works</a>
             <a href="#leaderboard" class="hover:text-violet-400 transition-colors">Leaderboard</a>
-            <button onclick="openAdminPanel()" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-3xl text-sm font-semibold transition-all flex items-center gap-2 shadow-lg shadow-rose-500/30">
-                <i class="fa-solid fa-shield-halved"></i> ADMIN PANEL
-            </button>
         </div>
     </div>
 </nav>
 
 <div class="pt-24 pb-16 max-w-6xl mx-auto px-6">
 
-<!-- HERO -->
 <div class="hero-bg rounded-3xl p-12 md:p-20 text-center relative overflow-hidden">
     <div class="absolute inset-0 bg-[radial-gradient(#a855f7_1px,transparent_1px)] [background-size:30px_30px] opacity-10"></div>
     <div class="max-w-2xl mx-auto">
@@ -157,26 +77,17 @@
             Share <span id="hero-site-name" class="font-semibold text-white">YourSite</span> and the #1 referrer wins a full homepage banner promotion!
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <!-- === SUPER PREMIUM GET MY REFERRAL LINK BUTTON === -->
-            <button onclick="getMyReferralLink()" 
-                    id="get-link-btn"
-                    class="get-link-btn px-10 py-6 bg-white text-zinc-950 font-semibold text-lg rounded-3xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-2xl shadow-violet-500/30 group">
-                <i class="fa-solid fa-gift group-active:rotate-12 transition-transform"></i> 
-                Get my referral link
+            <button onclick="getMyReferralLink()" id="get-link-btn" class="get-link-btn px-10 py-6 bg-white text-zinc-950 font-semibold text-lg rounded-3xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-2xl shadow-violet-500/30 group">
+                <i class="fa-solid fa-gift group-active:rotate-12 transition-transform"></i> Get my referral link
             </button>
-            
-            <button onclick="simulateReferral()" 
-                    id="simulate-btn"
-                    class="simulate-btn px-8 py-6 border border-white/30 hover:border-white/60 rounded-3xl font-medium flex items-center gap-3 transition-all group relative">
-                <i class="fa-solid fa-bolt group-active:rotate-12 transition-transform"></i> 
-                <span>Simulate Referral</span>
+            <button onclick="simulateReferral()" id="simulate-btn" class="simulate-btn px-8 py-6 border border-white/30 hover:border-white/60 rounded-3xl font-medium flex items-center gap-3 transition-all group relative">
+                <i class="fa-solid fa-bolt group-active:rotate-12 transition-transform"></i> <span>Simulate Referral</span>
                 <span class="text-[10px] bg-emerald-400/20 text-emerald-400 px-3 py-0.5 rounded-full font-mono tracking-wider">DEMO</span>
             </button>
         </div>
     </div>
 </div>
 
-<!-- REFERRAL SECTION -->
 <div id="referral-section" class="mt-12 glass border border-white/10 rounded-3xl p-8 md:p-12 relative">
     <div class="flex flex-col lg:flex-row gap-12">
         <div class="flex-1">
@@ -190,10 +101,8 @@
                 </div>
             </div>
             <div class="relative">
-                <input id="ref-link" readonly 
-                       class="ref-link w-full bg-zinc-900 border border-white/20 focus:border-violet-400 rounded-2xl px-6 py-5 text-lg font-mono text-emerald-300">
-                <button onclick="copyLink()" 
-                        class="absolute right-3 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-500 text-white px-8 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all">
+                <input id="ref-link" readonly class="ref-link w-full bg-zinc-900 border border-white/20 focus:border-violet-400 rounded-2xl px-6 py-5 text-lg font-mono text-emerald-300">
+                <button onclick="copyLink()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-500 text-white px-8 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all">
                     <i class="fa-solid fa-copy"></i> COPY
                 </button>
             </div>
@@ -234,7 +143,6 @@
     </div>
 </div>
 
-<!-- EMAIL MODAL -->
 <div id="email-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
     <div class="bg-zinc-900 rounded-3xl max-w-md w-full mx-4 overflow-hidden">
         <div class="px-8 pt-8 pb-6 border-b border-white/10">
@@ -251,7 +159,6 @@
     </div>
 </div>
 
-<!-- ADMIN PANEL MODAL -->
 <div id="admin-modal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center z-[300]">
     <div class="bg-zinc-900 rounded-3xl w-full max-w-5xl mx-6 max-h-[92vh] overflow-hidden flex flex-col">
         <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between">
@@ -273,7 +180,6 @@
             <button onclick="switchAdminTab(3)" id="tab-3" class="admin-tab px-8 py-5 font-semibold">ADVANCED</button>
         </div>
         <div class="flex-1 overflow-auto p-8">
-            <!-- TAB 0: GENERAL -->
             <div id="tab-content-0">
                 <div class="grid grid-cols-2 gap-8">
                     <div><label class="block text-xs tracking-widest text-zinc-400 mb-2">WEBSITE NAME</label><input id="admin-site-name" type="text" class="w-full bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none"></div>
@@ -284,7 +190,6 @@
                     <div class="flex gap-4"><input id="admin-primary-color" type="text" maxlength="7" class="w-40 bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none font-mono"><div id="color-preview" class="w-12 h-12 rounded-2xl border border-white/20"></div></div>
                 </div>
             </div>
-            <!-- TAB 1: LEADERBOARD PRIZE -->
             <div id="tab-content-1" class="hidden space-y-10">
                 <div class="border border-white/10 rounded-3xl p-8">
                     <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Grand Prize Settings</h3>
@@ -303,7 +208,6 @@
                     <div id="admin-leaderboard-list" class="space-y-4"></div>
                 </div>
             </div>
-            <!-- TAB 2: ANALYTICS -->
             <div id="tab-content-2" class="hidden">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <div class="analytics-card bg-zinc-900 border border-white/10 rounded-3xl p-6">
@@ -338,7 +242,6 @@
                     <div id="activity-log" class="text-sm space-y-3 text-zinc-400"></div>
                 </div>
             </div>
-            <!-- TAB 3: ADVANCED -->
             <div id="tab-content-3" class="hidden space-y-8">
                 <div class="border border-white/10 rounded-3xl p-8">
                     <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><i class="fa-solid fa-key"></i> Security</h3>
@@ -363,7 +266,6 @@
     </div>
 </div>
 
-<!-- GRAND PRIZE SPOTLIGHT -->
 <div class="mt-20 glass border border-white/10 rounded-3xl p-12 text-center">
     <div class="inline-flex items-center gap-2 bg-amber-400 text-zinc-950 text-xs font-bold px-6 py-2 rounded-3xl mb-6">
         <i class="fa-solid fa-crown crown"></i> CURRENT #1 WINNER GETS THIS
@@ -375,7 +277,6 @@
     </div>
 </div>
 
-<!-- LIVE LEADERBOARD -->
 <div id="leaderboard" class="mt-20">
     <div class="flex items-center justify-between mb-10">
         <h2 class="text-4xl font-bold tracking-tighter">Live Leaderboard</h2>
@@ -384,7 +285,6 @@
     <div id="leaderboard-container" class="space-y-3"></div>
 </div>
 
-<!-- HOW IT WORKS -->
 <div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
     <div class="glass border border-white/10 rounded-3xl p-8">
         <div class="text-violet-400 text-5xl mb-4">1️⃣</div>
@@ -405,14 +305,11 @@
 
 </div>
 
-<!-- WINNER CONTACT BUTTON -->
-<button onclick="showWinnerForm()" id="winner-claim-btn"
-        class="winner-btn fixed bottom-8 right-8 hidden bg-gradient-to-r from-amber-400 to-yellow-500 text-zinc-950 font-bold px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-3 z-[200]">
+<button onclick="showWinnerForm()" id="winner-claim-btn" class="winner-btn fixed bottom-8 right-8 hidden bg-gradient-to-r from-amber-400 to-yellow-500 text-zinc-950 font-bold px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-3 z-[200]">
     <i class="fa-solid fa-trophy"></i>
     I'm the #1 Winner – Submit My Banner Now
 </button>
 
-<!-- WINNER CONTACT MODAL -->
 <div id="winner-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[300]">
     <div class="bg-zinc-900 rounded-3xl max-w-lg w-full mx-4 overflow-hidden">
         <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between">
@@ -447,23 +344,35 @@
     </div>
 </div>
 
-<!-- FOOTER -->
 <footer class="bg-black py-12 border-t border-white/10">
     <div class="max-w-6xl mx-auto px-6 text-center text-xs text-zinc-500">
         Viral Refer with private Leaderboard + Analytics + Winner Contact Form • Only you control everything
     </div>
 </footer>
 
-<!-- TOAST -->
 <div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-zinc-800 border border-white/20 text-white px-8 py-4 rounded-3xl flex items-center gap-3 shadow-2xl toast">
     <i class="fa-solid fa-check-circle text-emerald-400"></i>
     <span id="toast-text" class="font-medium"></span>
 </div>
 
-<script>
-    // ====================== PRIVATE ADMIN PASSWORD (CHANGE THIS IMMEDIATELY) ======================
-    let ADMIN_PASSWORD = "viraladmin2025";
-    // ============================================================================================
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = 'https://wqbefjzpgsezzwdrvua.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxYmVmampwZ3Nlenp3ZHJ2dWEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczOTk5OTk5OSwiZXhwIjoyMDU1NTc1OTk5fQ.your-real-key-here'; // replace with your real anon key
+
+    const customStorage = {
+        memory: {},
+        getItem(key) { try { return localStorage.getItem(key); } catch(e) { console.warn('🔒 Incognito mode'); return this.memory[key] || null; } },
+        setItem(key, value) { try { localStorage.setItem(key, value); } catch(e) {} this.memory[key] = value; },
+        removeItem(key) { try { localStorage.removeItem(key); } catch(e) {} delete this.memory[key]; }
+    };
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { storage: customStorage, persistSession: true, autoRefreshToken: true }
+    });
+
+    let ADMIN_PASSWORD = "ViralSecret2026!K9pQ2mX";
 
     let config = {
         siteName: "AcmeApp",
@@ -499,13 +408,7 @@
     let charts = {};
 
     function loadConfig() {
-        let saved = null;
-        try {
-            saved = localStorage.getItem("viralReferConfig");
-        } catch(e) {
-            console.log("%c⚠️ localStorage blocked (sandboxed environment). Settings won't persist across reloads.", "color:#f59e0b");
-        }
-        
+        let saved = customStorage.getItem("viralReferConfig");
         if (saved) {
             const savedConfig = JSON.parse(saved);
             config = {
@@ -520,11 +423,7 @@
     }
 
     function saveConfig() {
-        try {
-            localStorage.setItem("viralReferConfig", JSON.stringify(config));
-        } catch(e) {
-            console.log("%c💾 Changes not persisted (localStorage unavailable in sandbox)", "color:#64748b");
-        }
+        customStorage.setItem("viralReferConfig", JSON.stringify(config));
     }
 
     function trackEvent(action, details = "") {
@@ -535,7 +434,7 @@
         if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderActivityLog();
     }
 
-    function init() {
+    async function init() {
         loadConfig();
         config.analytics.visitors++;
         updateAllTexts();
@@ -544,8 +443,7 @@
         renderWinnerBanner();
         updateWinnerButtonVisibility();
         trackEvent("Page View", "Homepage loaded");
-        console.log('%c✅ Viral Refer + Winner Contact Form loaded successfully', 'color:#a855f7; font-weight:bold');
-        console.log('%cℹ️ Tailwind CDN warning is normal for single-file demo. file:// warning disappears when using Live Server.', 'color:#64748b');
+        console.log('%c✅ Viral Refer loaded with Supabase + incognito fix', 'color:#a855f7; font-weight:bold');
     }
 
     function updateAllTexts() {
@@ -621,7 +519,7 @@
         document.getElementById('winner-modal').classList.add('hidden');
     }
 
-    function submitWinnerForm() {
+    async function submitWinnerForm() {
         const email = document.getElementById('winner-email').value.trim();
         const bannerUrl = document.getElementById('winner-banner-url').value.trim();
         if (!email || !bannerUrl) return alert("Email and Banner URL are required");
@@ -641,7 +539,9 @@
         hideWinnerForm();
         showToast("✅ Submission sent! You will receive the banner details.");
         trackEvent("Winner Banner Submission", submission.name);
-        if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
+
+        const { error } = await supabase.from('winner_submissions').insert([submission]);
+        if (error) console.error('Supabase error:', error);
     }
 
     function openAdminPanel() {
@@ -667,7 +567,6 @@
         const colorInput = document.getElementById('admin-primary-color');
         colorInput.value = hexColor;
         document.getElementById('color-preview').style.backgroundColor = hexColor;
-
         colorInput.addEventListener('input', () => {
             document.getElementById('color-preview').style.backgroundColor = colorInput.value;
         });
@@ -847,13 +746,11 @@
     function simulateReferral() {
         const btn = document.getElementById('simulate-btn');
         const originalHTML = btn.innerHTML;
-
         btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> SIMULATING...`;
         btn.disabled = true;
 
         setTimeout(() => {
             const added = Math.floor(Math.random() * 6) + 3;
-
             let targetUser = config.leaderboard.find(p => p.name === "You (Demo)");
             if (!targetUser && config.leaderboard.length > 0) targetUser = config.leaderboard[0];
             if (targetUser) targetUser.referrals += added;
@@ -875,20 +772,9 @@
             config.analytics.referrals += added;
             config.analytics.visitors += Math.floor(Math.random() * 12) + 5;
 
-            const rect = btn.getBoundingClientRect();
-            const floatEl = document.createElement('div');
-            floatEl.className = 'floating-referral';
-            floatEl.textContent = `+${added}`;
-            floatEl.style.left = `${rect.left + rect.width / 2 - 15}px`;
-            floatEl.style.top = `${rect.top + rect.height / 2 - 20}px`;
-            document.body.appendChild(floatEl);
-
             confettiBurst();
-            confetti({ particleCount: 120, spread: 80, origin: { x: rect.left / window.innerWidth + 0.1, y: 0.7 } });
-
             trackEvent("Simulated Referral", `+${added} referrals added to demo user`);
             saveConfig();
-
             showToast(`🎉 Simulated <span class="font-mono text-emerald-400">+${added}</span> referrals for You (Demo)!`);
 
             document.getElementById('leaderboard').scrollIntoView({ behavior: 'smooth' });
@@ -898,47 +784,36 @@
             setTimeout(() => {
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
-                floatEl.remove();
             }, 2200);
-
         }, 720);
     }
 
-    // ====================== FULLY IMPROVED GET MY REFERRAL LINK ELEMENT ======================
     function getMyReferralLink() {
         const btn = document.getElementById('get-link-btn');
         const originalHTML = btn.innerHTML;
         const originalClass = btn.className;
 
-        // 1. Loading state
         btn.classList.add('loading');
         btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-3"></i> GENERATING LINK...`;
 
-        // 2. Smooth scroll
         document.getElementById('referral-section').scrollIntoView({ behavior: 'smooth' });
 
         setTimeout(() => {
             const linkInput = document.getElementById('ref-link');
-            const container = linkInput.parentElement;
             const qr = document.getElementById('qr-code');
 
-            // Glow + success styling on input
             linkInput.classList.add('highlight-glow', 'border-emerald-400', 'text-emerald-400');
 
-            // Auto copy
             navigator.clipboard.writeText(referralLink).then(() => {
                 config.analytics.linkCopies++;
                 trackEvent("Get My Referral Link Clicked + Auto-Copied", referralLink);
                 saveConfig();
 
-                // 3. Success state on button
                 btn.classList.add('success');
                 btn.innerHTML = `<i class="fa-solid fa-check mr-3"></i> COPIED &amp; READY!`;
 
-                // 4. QR pulse animation
                 qr.classList.add('qr-pulse');
 
-                // 5. Floating "LINK READY!" animation
                 const rect = btn.getBoundingClientRect();
                 const floatEl = document.createElement('div');
                 floatEl.className = 'floating-ready';
@@ -947,27 +822,22 @@
                 floatEl.style.top = `${rect.top - 30}px`;
                 document.body.appendChild(floatEl);
 
-                // 6. Rich toast
                 showToast(`✅ Your referral link is <span class="font-mono text-emerald-300">copied &amp; ready to share!</span><br><span class="text-xs opacity-70">${referralLink}</span>`);
 
-                // 7. Big confetti celebration
                 confettiBurst();
                 confetti({ particleCount: 280, spread: 120, origin: { y: 0.5 } });
 
                 if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
 
-                // 8. Cleanup after 2.8 seconds
                 setTimeout(() => {
                     floatEl.remove();
                     qr.classList.remove('qr-pulse');
                     linkInput.classList.remove('highlight-glow', 'border-emerald-400', 'text-emerald-400');
 
-                    // Restore button
                     btn.classList.remove('success', 'loading');
                     btn.className = originalClass;
                     btn.innerHTML = originalHTML;
                 }, 2800);
-
             }).catch(() => {
                 btn.innerHTML = originalHTML;
                 btn.classList.remove('loading');
@@ -975,7 +845,6 @@
             });
         }, 850);
     }
-    // ==================================================================================================
 
     function generateNewCode() {
         generateReferralLink();
@@ -992,9 +861,7 @@
 
     function resetAllToDefaults() {
         if (confirm("Reset EVERYTHING (including submissions)?")) {
-            try {
-                localStorage.removeItem("viralReferConfig");
-            } catch(e) {}
+            customStorage.removeItem("viralReferConfig");
             location.reload();
         }
     }
@@ -1014,6 +881,28 @@
             openAdminPanel();
         }
     });
+
+    window.openAdminPanel = openAdminPanel;
+    window.closeAdminPanel = closeAdminPanel;
+    window.switchAdminTab = switchAdminTab;
+    window.saveAdminChanges = saveAdminChanges;
+    window.addLeaderboardEntry = addLeaderboardEntry;
+    window.removeLeaderboardEntry = removeLeaderboardEntry;
+    window.submitWinnerForm = submitWinnerForm;
+    window.hideWinnerForm = hideWinnerForm;
+    window.showWinnerForm = showWinnerForm;
+    window.trackBannerClick = trackBannerClick;
+    window.copyLink = copyLink;
+    window.shareTo = shareTo;
+    window.showEmailModal = showEmailModal;
+    window.hideEmailModal = hideEmailModal;
+    window.sendEmails = sendEmails;
+    window.generateNewCode = generateNewCode;
+    window.changeAdminPassword = changeAdminPassword;
+    window.resetAllToDefaults = resetAllToDefaults;
+    window.exportConfig = exportConfig;
+    window.getMyReferralLink = getMyReferralLink;
+    window.simulateReferral = simulateReferral;
 
     window.onload = init;
 </script>
