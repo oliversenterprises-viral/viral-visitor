@@ -56,9 +56,6 @@
         <div class="flex items-center gap-8 text-sm font-medium">
             <a href="#how" class="hover:text-violet-400 transition-colors">How it works</a>
             <a href="#leaderboard" class="hover:text-violet-400 transition-colors">Leaderboard</a>
-            <button onclick="openAdminPanel()" class="px-5 py-2 bg-white/5 hover:bg-white/10 border border-white/20 rounded-2xl text-xs font-mono tracking-widest flex items-center gap-2 transition-all">
-                <i class="fa-solid fa-shield-halved"></i> ADMIN
-            </button>
         </div>
     </div>
 </nav>
@@ -389,7 +386,14 @@
             duration: "30 days",
             minReferrals: 10
         },
-        leaderboard: [],
+        leaderboard: [
+            {
+                name: "Karanga Oliver",
+                referrals: 11,
+                website: "https://pickandprofit.com/join/?ref=oliversenterprises",
+                banner_url: "https://pickandprofit.com/wp-content/uploads/2019/12/Pay-Per-Lead-25-250x250-1.png"
+            }
+        ],
         analytics: {
             visitors: 1284,
             linkCopies: 243,
@@ -418,7 +422,18 @@
 
     async function loadLeaderboardFromSupabase() {
         const { data } = await supabase.from('referrers').select('*').order('referrals', { ascending: false });
-        if (data) config.leaderboard = data;
+        if (data && data.length > 0) {
+            config.leaderboard = data;
+        } else {
+            config.leaderboard = [
+                {
+                    name: "Karanga Oliver",
+                    referrals: 11,
+                    website: "https://pickandprofit.com/join/?ref=oliversenterprises",
+                    banner_url: "https://pickandprofit.com/wp-content/uploads/2019/12/Pay-Per-Lead-25-250x250-1.png"
+                }
+            ];
+        }
     }
 
     async function incrementReferral(refCode) {
