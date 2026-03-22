@@ -41,7 +41,7 @@
         .get-link-btn.success { background: #10b981 !important; color: white !important; transform: scale(1.05); }
         .qr-pulse { animation: qrPop 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards; }
         @keyframes qrPop { 0% { transform: scale(0.85) rotate(-8deg); } 40% { transform: scale(1.15) rotate(6deg); } 70% { transform: scale(0.98) rotate(-3deg); } 100% { transform: scale(1) rotate(0deg); } }
-        .floating-ready { position: fixed; font-size: 1.1rem; font-weight: 700; color: #22c55e; text-shadow: 0 0 20px #22c55e; pointer-events: none; z-index: 9999; animation: floatReady 2.2s cubic-bezier(0.25,0.46,0.45,0.94) forwards; }
+        .floating-ready { position: fixed; font-size: 1.1rem; font-weight: 700; color: #22c55e; text-shadow: 0 0 20px #22c55e; pointer-events: none; z-index: 99999; animation: floatReady 2.2s cubic-bezier(0.25,0.46,0.45,0.94) forwards; }
         @keyframes floatReady { 0% { transform: translateY(30px) scale(0.6); opacity: 0; } 20% { transform: translateY(-30px) scale(1.15); opacity: 1; } 80% { transform: translateY(-140px) scale(1); } 100% { transform: translateY(-160px) scale(0.9); opacity: 0; } }
     </style>
 </head>
@@ -56,6 +56,9 @@
         <div class="flex items-center gap-8 text-sm font-medium">
             <a href="#how" class="hover:text-violet-400 transition-colors">How it works</a>
             <a href="#leaderboard" class="hover:text-violet-400 transition-colors">Leaderboard</a>
+            <button onclick="openAdminPanel()" class="px-5 py-2 bg-white/5 hover:bg-white/10 border border-white/20 rounded-2xl text-xs font-mono tracking-widest flex items-center gap-2 transition-all">
+                <i class="fa-solid fa-shield-halved"></i> ADMIN
+            </button>
         </div>
     </div>
 </nav>
@@ -74,7 +77,7 @@
             <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400">Get your banner promoted.</span>
         </h1>
         <p id="hero-subtitle" class="text-xl text-zinc-400 mb-10 max-w-md mx-auto">
-            Share <span id="hero-site-name" class="font-semibold text-white">YourSite</span> and the #1 referrer wins a full homepage banner promotion!
+            Share <span id="hero-site-name" class="font-semibold text-white">YourSite</span> — the #1 referrer wins a full homepage banner promotion!
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <button onclick="getMyReferralLink()" id="get-link-btn" class="get-link-btn px-10 py-6 bg-white text-zinc-950 font-semibold text-lg rounded-3xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-2xl shadow-violet-500/30 group">
@@ -359,11 +362,11 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
     const SUPABASE_URL = 'https://wqbefjzpgsezzwdrvua.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxYmVmampwZ3Nlenp3ZHJ2dWEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczOTk5OTk5OSwiZXhwIjoyMDU1NTc1OTk5fQ.your-real-key-here'; // replace with your real anon key
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxYmVmanpwZ3Nlenp3ZHJ2dnVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTMyNDAsImV4cCI6MjA4OTUyOTI0MH0.pVHqeG0sGPgpUlOlskf7rOvnAsdrzrv5govZXcyxEdk';
 
     const customStorage = {
         memory: {},
-        getItem(key) { try { return localStorage.getItem(key); } catch(e) { console.warn('🔒 Incognito mode'); return this.memory[key] || null; } },
+        getItem(key) { try { return localStorage.getItem(key); } catch(e) { return this.memory[key] || null; } },
         setItem(key, value) { try { localStorage.setItem(key, value); } catch(e) {} this.memory[key] = value; },
         removeItem(key) { try { localStorage.removeItem(key); } catch(e) {} delete this.memory[key]; }
     };
@@ -373,10 +376,11 @@
     });
 
     let ADMIN_PASSWORD = "ViralSecret2026!K9pQ2mX";
+    let myRefCode = customStorage.getItem('myRefCode');
 
     let config = {
         siteName: "PickandProfit",
-        baseUrl: "https://pickandprofit.com/join/?ref=oliversenterprises",
+        baseUrl: "https://pickandprofit.com/join",
         rewardText: "the #1 referrer wins a full homepage banner promotion!",
         primaryColor: "134 76 255",
         leaderboardPrize: {
@@ -385,12 +389,7 @@
             duration: "30 days",
             minReferrals: 10
         },
-        leaderboard: [
-            { name: "Maya Chen", referrals: 47, website: "https://mayadesign.com", bannerUrl: "https://picsum.photos/id/1015/600/180" },
-            { name: "Alex Rivera", referrals: 32, website: "https://axrivera.dev", bannerUrl: "https://picsum.photos/id/201/600/180" },
-            { name: "Jordan Hale", referrals: 19, website: "https://jordanhale.co", bannerUrl: "https://picsum.photos/id/29/600/180" },
-            { name: "You (Demo)", referrals: 12, website: "https://yoursite.com", bannerUrl: "https://picsum.photos/id/870/600/180" }
-        ],
+        leaderboard: [],
         analytics: {
             visitors: 1284,
             linkCopies: 243,
@@ -406,6 +405,68 @@
 
     let referralLink = "";
     let charts = {};
+
+    async function testSupabaseConnection() {
+        try {
+            await supabase.from('referrers').select('id').limit(1);
+            await supabase.from('winner_submissions').select('id').limit(1);
+            console.log('%c✅ Both tables ready — real tracking + submissions active!', 'color:#22c55e; font-weight:bold');
+        } catch (e) {
+            console.warn('%c⚠️ One of the tables is missing — check SQL step', 'color:orange; font-weight:bold');
+        }
+    }
+
+    async function loadLeaderboardFromSupabase() {
+        const { data } = await supabase.from('referrers').select('*').order('referrals', { ascending: false });
+        if (data) config.leaderboard = data;
+    }
+
+    async function incrementReferral(refCode) {
+        if (!refCode) return;
+        await supabase.from('referrers').update({ referrals: supabase.raw('referrals + 1') }).eq('ref_code', refCode);
+        await loadLeaderboardFromSupabase();
+        renderLeaderboard();
+        renderWinnerBanner();
+        updateWinnerButtonVisibility();
+    }
+
+    async function createMyRefCodeIfNeeded() {
+        if (myRefCode) return;
+        myRefCode = `USER${Math.floor(100000 + Math.random() * 900000)}`;
+        customStorage.setItem('myRefCode', myRefCode);
+        await supabase.from('referrers').insert([{
+            ref_code: myRefCode,
+            name: "You (Demo)",
+            referrals: 0,
+            website: config.baseUrl,
+            banner_url: "https://picsum.photos/id/870/600/180"
+        }]);
+    }
+
+    async function init() {
+        loadConfig();
+        if (!customStorage.getItem('visitorsCounted')) {
+            config.analytics.visitors++;
+            customStorage.setItem('visitorsCounted', 'true');
+        }
+        await testSupabaseConnection();
+        await createMyRefCodeIfNeeded();
+        await loadLeaderboardFromSupabase();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const incomingRef = urlParams.get('ref');
+        if (incomingRef && incomingRef !== myRefCode) {
+            await incrementReferral(incomingRef);
+        }
+
+        updateAllTexts();
+        generateReferralLink();
+        renderLeaderboard();
+        renderWinnerBanner();
+        updateWinnerButtonVisibility();
+        trackEvent("Page View", "Homepage loaded");
+        console.log('%c✅ Viral Refer loaded with REAL shared referral tracking + winner submissions!', 'color:#a855f7; font-weight:bold');
+    }
 
     function loadConfig() {
         let saved = customStorage.getItem("viralReferConfig");
@@ -434,38 +495,29 @@
         if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderActivityLog();
     }
 
-    async function init() {
-        loadConfig();
-        config.analytics.visitors++;
-        updateAllTexts();
-        generateReferralLink();
-        renderLeaderboard();
-        renderWinnerBanner();
-        updateWinnerButtonVisibility();
-        trackEvent("Page View", "Homepage loaded");
-        console.log('%c✅ Viral Refer loaded with Supabase + incognito fix', 'color:#a855f7; font-weight:bold');
-    }
-
     function updateAllTexts() {
         document.querySelectorAll('#hero-site-name').forEach(el => el.textContent = config.siteName);
-        document.getElementById('hero-subtitle').innerHTML = `Share <span class="font-semibold text-white">${config.siteName}</span> and ${config.rewardText}`;
+        document.getElementById('hero-subtitle').innerHTML = `Share <span class="font-semibold text-white">${config.siteName}</span> — ${config.rewardText}`;
         document.getElementById('prize-title-display').textContent = config.leaderboardPrize.title;
         document.getElementById('prize-desc-display').textContent = config.leaderboardPrize.description;
     }
 
     function generateReferralLink() {
-        referralLink = `${config.baseUrl}/ref/USER${Math.floor(100000 + Math.random() * 900000)}`;
+        referralLink = `${config.baseUrl}?ref=${myRefCode}`;
         document.getElementById('ref-link').value = referralLink;
         document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
     }
 
     function renderWinnerBanner() {
         const winner = config.leaderboard[0];
-        if (!winner) return;
+        if (!winner) {
+            document.getElementById('winner-banner').innerHTML = `<div class="p-12 text-center text-zinc-500">No winner yet</div>`;
+            return;
+        }
         const container = document.getElementById('winner-banner');
         container.innerHTML = `
             <a href="${winner.website}" target="_blank">
-                <img src="${winner.bannerUrl}" class="w-full h-auto rounded-3xl" alt="${winner.name}'s banner">
+                <img src="${winner.banner_url}" class="w-full h-auto rounded-3xl" alt="${winner.name}'s banner">
             </a>
             <div class="p-6 text-center">
                 <div class="font-semibold text-xl">${winner.name} <span class="text-emerald-400">• #1</span></div>
@@ -528,7 +580,7 @@
             time: new Date().toLocaleString(),
             name: document.getElementById('winner-name').value,
             email: email,
-            bannerUrl: bannerUrl,
+            banner_url: bannerUrl,
             message: document.getElementById('winner-message').value.trim() || "No message"
         };
 
@@ -537,11 +589,17 @@
 
         saveConfig();
         hideWinnerForm();
-        showToast("✅ Submission sent! You will receive the banner details.");
+        showToast("✅ Submission saved! (Supabase + local backup)");
         trackEvent("Winner Banner Submission", submission.name);
 
-        const { error } = await supabase.from('winner_submissions').insert([submission]);
-        if (error) console.error('Supabase error:', error);
+        try {
+            const { error } = await supabase.from('winner_submissions').insert([submission]);
+            if (error) throw error;
+            console.log('%c✅ Winner submission sent to Supabase!', 'color:#22c55e');
+        } catch (e) {
+            console.error('Supabase error:', e);
+            showToast("⚠️ Saved locally only.");
+        }
     }
 
     function openAdminPanel() {
@@ -563,13 +621,15 @@
         document.getElementById('admin-site-name').value = config.siteName;
         document.getElementById('admin-base-url').value = config.baseUrl;
         document.getElementById('admin-reward-text').value = config.rewardText;
-        const hexColor = "#" + config.primaryColor.replace(/\s/g, '').split(',').map(n => parseInt(n).toString(16).padStart(2,'0')).join('');
+
+        const rgb = config.primaryColor.split(/\s+/).map(Number);
+        const hexColor = '#' + rgb.map(n => n.toString(16).padStart(2, '0')).join('');
         const colorInput = document.getElementById('admin-primary-color');
         colorInput.value = hexColor;
         document.getElementById('color-preview').style.backgroundColor = hexColor;
-        colorInput.addEventListener('input', () => {
+        colorInput.oninput = () => {
             document.getElementById('color-preview').style.backgroundColor = colorInput.value;
-        });
+        };
 
         document.getElementById('prize-title').value = config.leaderboardPrize.title;
         document.getElementById('prize-desc').value = config.leaderboardPrize.description;
@@ -577,7 +637,6 @@
         document.getElementById('min-referrals').value = config.leaderboardPrize.minReferrals;
 
         renderAdminLeaderboardList();
-        renderAnalytics();
     }
 
     function renderAdminLeaderboardList() {
@@ -590,7 +649,7 @@
                 <input type="text" value="${entry.name}" id="lb-name-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
                 <input type="number" value="${entry.referrals}" id="lb-ref-${i}" class="w-28 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3 text-center">
                 <input type="text" value="${entry.website}" id="lb-site-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
-                <input type="text" value="${entry.bannerUrl}" id="lb-banner-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
+                <input type="text" value="${entry.banner_url}" id="lb-banner-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
                 <button onclick="removeLeaderboardEntry(${i})" class="px-4 py-3 text-rose-400 hover:bg-rose-400/10 rounded-xl"><i class="fa-solid fa-trash"></i></button>
             `;
             list.appendChild(div);
@@ -598,7 +657,7 @@
     }
 
     function addLeaderboardEntry() {
-        config.leaderboard.push({ name: "New Referrer", referrals: 10, website: "https://newsite.com", bannerUrl: "https://picsum.photos/id/870/600/180" });
+        config.leaderboard.push({ name: "New Referrer", referrals: 10, website: "https://newsite.com", banner_url: "https://picsum.photos/id/870/600/180" });
         renderAdminLeaderboardList();
     }
 
@@ -611,7 +670,7 @@
         }
     }
 
-    function saveAdminChanges() {
+    async function saveAdminChanges() {
         config.siteName = document.getElementById('admin-site-name').value.trim() || config.siteName;
         config.baseUrl = document.getElementById('admin-base-url').value.trim() || config.baseUrl;
         config.rewardText = document.getElementById('admin-reward-text').value.trim() || config.rewardText;
@@ -629,19 +688,22 @@
         config.leaderboardPrize.duration = document.getElementById('prize-duration').value;
         config.leaderboardPrize.minReferrals = parseInt(document.getElementById('min-referrals').value) || 10;
 
-        config.leaderboard = config.leaderboard.map((_, i) => ({
-            name: document.getElementById(`lb-name-${i}`).value,
-            referrals: parseInt(document.getElementById(`lb-ref-${i}`).value) || 0,
-            website: document.getElementById(`lb-site-${i}`).value,
-            bannerUrl: document.getElementById(`lb-banner-${i}`).value
-        }));
+        if (config.leaderboard && config.leaderboard.length > 0) {
+            config.leaderboard = config.leaderboard.map((_, i) => ({
+                name: document.getElementById(`lb-name-${i}`) ? document.getElementById(`lb-name-${i}`).value : '',
+                referrals: parseInt(document.getElementById(`lb-ref-${i}`) ? document.getElementById(`lb-ref-${i}`).value : 0) || 0,
+                website: document.getElementById(`lb-site-${i}`) ? document.getElementById(`lb-site-${i}`).value : '',
+                banner_url: document.getElementById(`lb-banner-${i}`) ? document.getElementById(`lb-banner-${i}`).value : ''
+            }));
+        }
 
         saveConfig();
+        await loadLeaderboardFromSupabase();
         updateAllTexts();
         renderLeaderboard();
         renderWinnerBanner();
         updateWinnerButtonVisibility();
-        showToast("✅ All changes saved &amp; live on the page!");
+        showToast("✅ All changes saved & live on the page!");
     }
 
     function switchAdminTab(tab) {
@@ -698,7 +760,7 @@
             showToast("✅ Link copied to clipboard!");
             confettiBurst();
             if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
-        });
+        }).catch(() => showToast("⚠️ Could not copy – try again"));
     }
 
     function shareTo(platform) {
@@ -751,35 +813,18 @@
 
         setTimeout(() => {
             const added = Math.floor(Math.random() * 6) + 3;
-            let targetUser = config.leaderboard.find(p => p.name === "You (Demo)");
-            if (!targetUser && config.leaderboard.length > 0) targetUser = config.leaderboard[0];
-            if (targetUser) targetUser.referrals += added;
-
-            if (Math.random() < 0.25) {
-                const fakeNames = ["Sam Rivera", "Taylor Kim", "Casey Lopez", "Jordan Park", "Riley Quinn"];
-                config.leaderboard.push({
-                    name: fakeNames[Math.floor(Math.random() * fakeNames.length)],
-                    referrals: Math.floor(Math.random() * 9) + 4,
-                    website: "https://demo-site.com",
-                    bannerUrl: `https://picsum.photos/id/${100 + Math.floor(Math.random() * 200)}/600/180`
-                });
-            }
+            let target = config.leaderboard.find(p => p.ref_code === myRefCode);
+            if (target) target.referrals += added;
 
             renderLeaderboard();
             renderWinnerBanner();
             updateWinnerButtonVisibility();
 
-            config.analytics.referrals += added;
-            config.analytics.visitors += Math.floor(Math.random() * 12) + 5;
-
             confettiBurst();
-            trackEvent("Simulated Referral", `+${added} referrals added to demo user`);
-            saveConfig();
-            showToast(`🎉 Simulated <span class="font-mono text-emerald-400">+${added}</span> referrals for You (Demo)!`);
+            trackEvent("Simulated Referral", `+${added} referrals`);
+            showToast(`🎉 Simulated <span class="font-mono text-emerald-400">+${added}</span> referrals!`);
 
             document.getElementById('leaderboard').scrollIntoView({ behavior: 'smooth' });
-
-            if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
 
             setTimeout(() => {
                 btn.innerHTML = originalHTML;
@@ -847,6 +892,8 @@
     }
 
     function generateNewCode() {
+        myRefCode = `USER${Math.floor(100000 + Math.random() * 900000)}`;
+        customStorage.setItem('myRefCode', myRefCode);
         generateReferralLink();
         showToast("New referral code generated 🔥");
     }
