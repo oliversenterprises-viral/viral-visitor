@@ -84,7 +84,7 @@
         </div>
     </div>
 
-    <!-- LIVE STATS ON MAIN PAGE (no need to open admin) -->
+    <!-- LIVE STATS ON MAIN PAGE -->
     <div class="mt-8 glass border border-white/10 rounded-3xl p-6 flex justify-center gap-12 text-center">
         <div>
             <div class="text-xs text-zinc-400">LIVE VISITORS</div>
@@ -420,7 +420,6 @@
     let charts = {};
     let analyticsSubscription = null;
 
-    // Reset function
     async function resetGlobalStats() {
         if (!confirm("⚠️ This will permanently reset ALL global stats to zero.\n\nContinue?")) return;
         config.analytics = {
@@ -439,7 +438,6 @@
         location.reload();
     }
 
-    // Live toast notification on main page
     function showActivityToast(message) {
         const toast = document.createElement('div');
         toast.className = `fixed bottom-8 right-8 bg-emerald-600 text-white px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 z-[99999]`;
@@ -453,7 +451,6 @@
         }, 4000);
     }
 
-    // Realtime subscription (starts on page load)
     function startRealtime() {
         if (analyticsSubscription) return;
         analyticsSubscription = supabase
