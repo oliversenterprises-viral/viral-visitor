@@ -84,6 +84,22 @@
         </div>
     </div>
 
+    <!-- LIVE STATS ON MAIN PAGE (no need to open admin) -->
+    <div class="mt-8 glass border border-white/10 rounded-3xl p-6 flex justify-center gap-12 text-center">
+        <div>
+            <div class="text-xs text-zinc-400">LIVE VISITORS</div>
+            <div id="live-visitors" class="text-5xl font-bold text-white">0</div>
+        </div>
+        <div>
+            <div class="text-xs text-zinc-400">LINK COPIES</div>
+            <div id="live-copies" class="text-5xl font-bold text-emerald-400">0</div>
+        </div>
+        <div>
+            <div class="text-xs text-zinc-400">TOTAL SHARES</div>
+            <div id="live-shares" class="text-5xl font-bold text-violet-400">0</div>
+        </div>
+    </div>
+
     <div id="referral-section" class="mt-12 glass border border-white/10 rounded-3xl p-8 md:p-12 relative">
         <div class="flex flex-col lg:flex-row gap-12">
             <div class="flex-1">
@@ -254,7 +270,7 @@
                             <i class="fa-solid fa-trash"></i>
                             RESET ALL GLOBAL STATS TO ZERO
                         </button>
-                        <p class="text-xs text-zinc-500 text-center mt-4">This will clear visitors, link copies, shares, banner clicks, and activity log.</p>
+                        <p class="text-xs text-zinc-500 text-center mt-4">This will permanently clear all stats.</p>
                     </div>
                 </div>
             </div>
@@ -404,9 +420,9 @@
     let charts = {};
     let analyticsSubscription = null;
 
-    // One-click reset button
+    // Reset function
     async function resetGlobalStats() {
-        if (!confirm("⚠️ WARNING: This will reset ALL global stats (visitors, link copies, shares, banner clicks, activity log) to zero.\n\nAre you absolutely sure?")) return;
+        if (!confirm("⚠️ This will permanently reset ALL global stats to zero.\n\nContinue?")) return;
         config.analytics = {
             visitors: 0,
             linkCopies: 0,
@@ -418,11 +434,12 @@
             submissions: []
         };
         await saveGlobalAnalytics();
-        showToast("✅ All global stats have been reset to zero");
-        if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
+        customStorage.removeItem("viralReferConfig");
+        showToast("✅ All global stats permanently reset to zero");
+        location.reload();
     }
 
-    // Real-time activity notification
+    // Live toast notification on main page
     function showActivityToast(message) {
         const toast = document.createElement('div');
         toast.className = `fixed bottom-8 right-8 bg-emerald-600 text-white px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 z-[99999]`;
@@ -434,6 +451,27 @@
             toast.style.transform = 'translateY(20px)';
             setTimeout(() => toast.remove(), 400);
         }, 4000);
+    }
+
+    // Realtime subscription (starts on page load)
+    function startRealtime() {
+        if (analyticsSubscription) return;
+        analyticsSubscription = supabase
+            .channel('public-live-stats')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'site_analytics', filter: 'id=eq.1' }, (payload) => {
+                if (payload.new) {
+                    config.analytics = { ...config.analytics, ...payload.new };
+                    updateLiveStatsOnHomepage();
+                    showActivityToast("🚀 New activity detected!");
+                }
+            })
+            .subscribe();
+    }
+
+    function updateLiveStatsOnHomepage() {
+        document.getElementById('live-visitors').textContent = config.analytics.visitors.toLocaleString();
+        document.getElementById('live-copies').textContent = config.analytics.linkCopies;
+        document.getElementById('live-shares').textContent = Object.values(config.analytics.shares).reduce((a,b)=>a+b,0);
     }
 
     async function ensureAnalyticsRow() {
@@ -467,7 +505,7 @@
             config.analytics.shares[amount] = (config.analytics.shares[amount] || 0) + 1;
         }
         await saveGlobalAnalytics();
-        if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
+        updateLiveStatsOnHomepage();
     }
 
     async function testSupabaseConnection() {
@@ -535,7 +573,10 @@
         updateWinnerButtonVisibility();
         trackEvent("Page View", "Homepage loaded");
 
-        console.log('%c🚀 Viral Refer is 100% LIVE with REAL-TIME notifications!', 'color:#a855f7; font-weight:bold; font-size:16px');
+        startRealtime();
+        updateLiveStatsOnHomepage();
+
+        console.log('%c🚀 Viral Refer is 100% LIVE with public stats + notifications!', 'color:#a855f7; font-weight:bold; font-size:16px');
     }
 
     function loadConfig() {
@@ -769,24 +810,6 @@
             document.getElementById(`tab-content-${i}`).classList.toggle('hidden', i !== tab);
             document.getElementById(`tab-${i}`).classList.toggle('admin-tab-active', i === tab);
         }
-        if (tab === 2) {
-            renderAnalytics();
-            if (!analyticsSubscription) {
-                analyticsSubscription = supabase
-                    .channel('analytics-realtime')
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'site_analytics', filter: 'id=eq.1' }, (payload) => {
-                        if (payload.new) {
-                            config.analytics = { ...config.analytics, ...payload.new };
-                            renderAnalytics();
-                            showActivityToast("🚀 New visitor activity detected!");
-                        }
-                    })
-                    .subscribe();
-            }
-        } else if (analyticsSubscription) {
-            supabase.removeChannel(analyticsSubscription);
-            analyticsSubscription = null;
-        }
     }
 
     function renderAnalytics() {
@@ -835,7 +858,7 @@
             saveConfig();
             showToast("✅ Link copied to clipboard!");
             confettiBurst();
-            if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
+            updateLiveStatsOnHomepage();
         }).catch(() => showToast("⚠️ Could not copy – try again"));
     }
 
@@ -851,7 +874,7 @@
         trackEvent("Shared on " + platform.toUpperCase());
         saveConfig();
         confettiBurst();
-        if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
+        updateLiveStatsOnHomepage();
     }
 
     function trackBannerClick() {
@@ -859,7 +882,7 @@
         trackEvent("Banner Clicked", "Winner banner");
         saveConfig();
         showToast("Banner click tracked 📈");
-        if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
+        updateLiveStatsOnHomepage();
     }
 
     function showEmailModal() {
@@ -941,7 +964,6 @@
                 showToast(`✅ Your referral link is <span class="font-mono text-emerald-300">copied &amp; ready to share!</span><br><span class="text-xs opacity-70">${referralLink}</span>`);
                 confettiBurst();
                 confetti({ particleCount: 280, spread: 120, origin: { y: 0.5 } });
-                if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
                 setTimeout(() => {
                     floatEl.remove();
                     qr.classList.remove('qr-pulse');
