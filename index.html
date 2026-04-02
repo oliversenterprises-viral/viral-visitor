@@ -76,8 +76,7 @@
                 Share <span id="hero-site-name" class="font-semibold text-white">YourSite</span> — the #1 referrer wins a full homepage banner promotion!
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button onclick="getMyReferralLink()" id="get-link-btn"
-                        class="get-link-btn px-10 py-6 bg-white text-zinc-950 font-semibold text-lg rounded-3xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-2xl shadow-violet-500/30 group">
+                <button onclick="getMyReferralLink()" id="get-link-btn" class="get-link-btn px-10 py-6 bg-white text-zinc-950 font-semibold text-lg rounded-3xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-2xl shadow-violet-500/30 group">
                     <i class="fa-solid fa-gift group-active:rotate-12 transition-transform"></i>
                     Get my referral link
                 </button>
@@ -182,7 +181,7 @@
                 <div id="tab-content-0">
                     <div class="grid grid-cols-2 gap-8">
                         <div><label class="block text-xs tracking-widest text-zinc-400 mb-2">WEBSITE NAME</label><input id="admin-site-name" type="text" class="w-full bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none"></div>
-                        <div><label class="block text-xs tracking-widest text-zinc-400 mb-2">BASE URL[](https://...)</label><input id="admin-base-url" type="text" class="w-full bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none"></div>
+                        <div><label class="block text-xs tracking-widest text-zinc-400 mb-2">BASE URL</label><input id="admin-base-url" type="text" class="w-full bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none"></div>
                     </div>
                     <div class="mt-8"><label class="block text-xs tracking-widest text-zinc-400 mb-2">HERO REWARD DESCRIPTION</label><input id="admin-reward-text" type="text" class="w-full bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none"></div>
                     <div class="mt-8"><label class="block text-xs tracking-widest text-zinc-400 mb-2">PRIMARY COLOR (hex)</label>
@@ -251,14 +250,11 @@
                     </div>
                     <div class="border border-white/10 rounded-3xl p-8">
                         <h3 class="text-lg font-semibold mb-6 text-rose-400">Danger Zone</h3>
-                        <div class="flex flex-wrap gap-4">
-                            <button onclick="exportConfig()" class="px-8 py-4 bg-zinc-700 hover:bg-zinc-600 rounded-2xl font-semibold flex items-center gap-2">
-                                <i class="fa-solid fa-download"></i> Export Config
-                            </button>
-                            <button onclick="resetAllToDefaults()" class="px-8 py-4 bg-rose-600 hover:bg-rose-500 rounded-2xl font-semibold flex items-center gap-2">
-                                <i class="fa-solid fa-trash"></i> Reset Everything
-                            </button>
-                        </div>
+                        <button onclick="resetGlobalStats()" class="w-full py-6 bg-rose-600 hover:bg-rose-500 rounded-3xl font-semibold flex items-center justify-center gap-3 text-lg">
+                            <i class="fa-solid fa-trash"></i>
+                            RESET ALL GLOBAL STATS TO ZERO
+                        </button>
+                        <p class="text-xs text-zinc-500 text-center mt-4">This will clear visitors, link copies, shares, banner clicks, and activity log.</p>
                     </div>
                 </div>
             </div>
@@ -408,18 +404,46 @@
     let charts = {};
     let analyticsSubscription = null;
 
-    // FIXED & WORKING ANALYTICS FUNCTIONS
+    // One-click reset button
+    async function resetGlobalStats() {
+        if (!confirm("⚠️ WARNING: This will reset ALL global stats (visitors, link copies, shares, banner clicks, activity log) to zero.\n\nAre you absolutely sure?")) return;
+        config.analytics = {
+            visitors: 0,
+            linkCopies: 0,
+            shares: { x: 0, facebook: 0, whatsapp: 0, linkedin: 0, email: 0 },
+            bannerClicks: 0,
+            conversionRate: 0,
+            growthData: [0,0,0,0,0,0,0],
+            activityLog: [],
+            submissions: []
+        };
+        await saveGlobalAnalytics();
+        showToast("✅ All global stats have been reset to zero");
+        if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
+    }
+
+    // Real-time activity notification
+    function showActivityToast(message) {
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-8 right-8 bg-emerald-600 text-white px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 z-[99999]`;
+        toast.innerHTML = `<i class="fa-solid fa-bell"></i><span class="font-medium">${message}</span>`;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.transition = 'all 0.4s ease';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            setTimeout(() => toast.remove(), 400);
+        }, 4000);
+    }
+
     async function ensureAnalyticsRow() {
         try {
             const { data, error } = await supabase.from('site_analytics').select('id').eq('id', 1).single();
             if (error && error.code !== 'PGRST116') throw error;
             if (!data) {
                 await supabase.from('site_analytics').insert([{ id: 1, ...config.analytics }]);
-                console.log('%c✅ Created missing site_analytics row', 'color:#22c55e');
             }
-        } catch (e) {
-            console.error('❌ ensureAnalyticsRow failed:', e.message || e);
-        }
+        } catch (e) {}
     }
 
     async function loadGlobalAnalytics() {
@@ -427,24 +451,19 @@
             const { data, error } = await supabase.from('site_analytics').select('*').eq('id', 1).single();
             if (error) throw error;
             if (data) config.analytics = { ...config.analytics, ...data };
-        } catch (e) {
-            console.error('❌ loadGlobalAnalytics failed:', e.message || e);
-        }
+        } catch (e) {}
     }
 
     async function saveGlobalAnalytics() {
         try {
             const { error } = await supabase.from('site_analytics').upsert({ id: 1, ...config.analytics }, { onConflict: 'id' });
             if (error) throw error;
-        } catch (e) {
-            console.error('❌ saveGlobalAnalytics failed:', e.message || e);
-        }
+        } catch (e) {}
     }
 
     async function incrementGlobalStat(key, amount = 1) {
-        if (typeof config.analytics[key] === 'number') {
-            config.analytics[key] += amount;
-        } else if (key === 'shares' && typeof amount === 'string') {
+        if (typeof config.analytics[key] === 'number') config.analytics[key] += amount;
+        else if (key === 'shares' && typeof amount === 'string') {
             config.analytics.shares[amount] = (config.analytics.shares[amount] || 0) + 1;
         }
         await saveGlobalAnalytics();
@@ -516,7 +535,7 @@
         updateWinnerButtonVisibility();
         trackEvent("Page View", "Homepage loaded");
 
-        console.log('%c🚀 Viral Refer is 100% LIVE with REAL-TIME analytics dashboard!', 'color:#a855f7; font-weight:bold; font-size:16px');
+        console.log('%c🚀 Viral Refer is 100% LIVE with REAL-TIME notifications!', 'color:#a855f7; font-weight:bold; font-size:16px');
     }
 
     function loadConfig() {
@@ -755,23 +774,18 @@
             if (!analyticsSubscription) {
                 analyticsSubscription = supabase
                     .channel('analytics-realtime')
-                    .on(
-                        'postgres_changes',
-                        { event: '*', schema: 'public', table: 'site_analytics', filter: 'id=eq.1' },
-                        (payload) => {
-                            if (payload.new) {
-                                config.analytics = { ...config.analytics, ...payload.new };
-                                renderAnalytics();
-                            }
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'site_analytics', filter: 'id=eq.1' }, (payload) => {
+                        if (payload.new) {
+                            config.analytics = { ...config.analytics, ...payload.new };
+                            renderAnalytics();
+                            showActivityToast("🚀 New visitor activity detected!");
                         }
-                    )
+                    })
                     .subscribe();
             }
-        } else {
-            if (analyticsSubscription) {
-                supabase.removeChannel(analyticsSubscription);
-                analyticsSubscription = null;
-            }
+        } else if (analyticsSubscription) {
+            supabase.removeChannel(analyticsSubscription);
+            analyticsSubscription = null;
         }
     }
 
@@ -1002,6 +1016,7 @@
     window.resetAllToDefaults = resetAllToDefaults;
     window.exportConfig = exportConfig;
     window.getMyReferralLink = getMyReferralLink;
+    window.resetGlobalStats = resetGlobalStats;
 
     window.onload = init;
 </script>
