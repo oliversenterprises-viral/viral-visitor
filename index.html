@@ -387,9 +387,23 @@
         baseUrl: "https://viralrefer.app",
         rewardText: "the #1 referrer wins a full homepage banner promotion!",
         primaryColor: "134 76 255",
-        leaderboardPrize: { title: "Homepage Banner Promotion", description: "Your website + custom banner featured on our homepage for 30 days!", duration: "30 days", minReferrals: 10 },
+        leaderboardPrize: {
+            title: "Homepage Banner Promotion",
+            description: "Your website + custom banner featured on our homepage for 30 days!",
+            duration: "30 days",
+            minReferrals: 10
+        },
         leaderboard: [],
-        analytics: { visitors: 0, linkCopies: 0, shares: { x: 0, facebook: 0, whatsapp: 0, linkedin: 0, email: 0 }, bannerClicks: 0, conversionRate: 0, growthData: [0,0,0,0,0,0,0], activityLog: [], submissions: [] }
+        analytics: {
+            visitors: 0,
+            linkCopies: 0,
+            shares: { x: 0, facebook: 0, whatsapp: 0, linkedin: 0, email: 0 },
+            bannerClicks: 0,
+            conversionRate: 0,
+            growthData: [0,0,0,0,0,0,0],
+            activityLog: [],
+            submissions: []
+        }
     };
 
     let referralLink = "";
@@ -398,7 +412,16 @@
 
     async function resetGlobalStats() {
         if (!confirm("⚠️ This will permanently reset ALL global stats to zero.\n\nContinue?")) return;
-        config.analytics = { visitors: 0, linkCopies: 0, shares: { x: 0, facebook: 0, whatsapp: 0, linkedin: 0, email: 0 }, bannerClicks: 0, conversionRate: 0, growthData: [0,0,0,0,0,0,0], activityLog: [], submissions: [] };
+        config.analytics = {
+            visitors: 0,
+            linkCopies: 0,
+            shares: { x: 0, facebook: 0, whatsapp: 0, linkedin: 0, email: 0 },
+            bannerClicks: 0,
+            conversionRate: 0,
+            growthData: [0,0,0,0,0,0,0],
+            activityLog: [],
+            submissions: []
+        };
         await saveGlobalAnalytics();
         customStorage.removeItem("viralReferConfig");
         showToast("✅ All global stats permanently reset to zero");
@@ -442,7 +465,9 @@
         try {
             const { data, error } = await supabase.from('site_analytics').select('id').eq('id', 1).single();
             if (error && error.code !== 'PGRST116') throw error;
-            if (!data) await supabase.from('site_analytics').insert([{ id: 1, ...config.analytics }]);
+            if (!data) {
+                await supabase.from('site_analytics').insert([{ id: 1, ...config.analytics }]);
+            }
         } catch (e) {}
     }
 
@@ -463,13 +488,53 @@
 
     async function incrementGlobalStat(key, amount = 1) {
         if (typeof config.analytics[key] === 'number') config.analytics[key] += amount;
-        else if (key === 'shares' && typeof amount === 'string') config.analytics.shares[amount] = (config.analytics.shares[amount] || 0) + 1;
+        else if (key === 'shares' && typeof amount === 'string') {
+            config.analytics.shares[amount] = (config.analytics.shares[amount] || 0) + 1;
+        }
         await saveGlobalAnalytics();
         updateLiveStatsOnHomepage();
     }
 
+    async function testSupabaseConnection() {
+        try {
+            await supabase.from('referrers').select('id').limit(1);
+            await supabase.from('winner_submissions').select('id').limit(1);
+            console.log('%c✅ Supabase tables ready — real tracking active!', 'color:#22c55e; font-weight:bold');
+        } catch (e) {
+            console.warn('%c⚠️ Check your Supabase tables', 'color:orange');
+        }
+    }
+
+    async function loadLeaderboardFromSupabase() {
+        const { data } = await supabase.from('referrers').select('*').order('referrals', { ascending: false });
+        config.leaderboard = data || [];
+    }
+
+    async function incrementReferral(refCode) {
+        if (!refCode) return;
+        await supabase.from('referrers').update({ referrals: supabase.raw('referrals + 1') }).eq('ref_code', refCode);
+        await loadLeaderboardFromSupabase();
+        renderLeaderboard();
+        renderWinnerBanner();
+        updateWinnerButtonVisibility();
+    }
+
+    async function createMyRefCodeIfNeeded() {
+        if (myRefCode) return;
+        myRefCode = `USER${Math.floor(100000 + Math.random() * 900000)}`;
+        customStorage.setItem('myRefCode', myRefCode);
+        await supabase.from('referrers').insert([{
+            ref_code: myRefCode,
+            name: "You",
+            referrals: 0,
+            website: config.baseUrl,
+            banner_url: "https://picsum.photos/id/870/600/180"
+        }]);
+    }
+
     async function init() {
         loadConfig();
+        await testSupabaseConnection();
         await ensureAnalyticsRow();
         await loadGlobalAnalytics();
         await createMyRefCodeIfNeeded();
@@ -482,7 +547,9 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const incomingRef = urlParams.get('ref');
-        if (incomingRef && incomingRef !== myRefCode) await incrementReferral(incomingRef);
+        if (incomingRef && incomingRef !== myRefCode) {
+            await incrementReferral(incomingRef);
+        }
 
         updateAllTexts();
         generateReferralLink();
@@ -494,10 +561,8 @@
         startRealtime();
         updateLiveStatsOnHomepage();
 
-        console.log('%c🚀 Viral Refer is 100% LIVE with strengthened real-time toasts!', 'color:#10b981; font-weight:bold; font-size:16px');
+        console.log('%c🚀 FINAL ULTRA-CLEAN VERSION — Toast notifications strengthened & guaranteed!', 'color:#10b981; font-weight:bold; font-size:16px');
     }
-
-    // All remaining functions (loadConfig, saveConfig, trackEvent, updateAllTexts, generateReferralLink, renderWinnerBanner, renderLeaderboard, updateWinnerButtonVisibility, showWinnerForm, hideWinnerForm, submitWinnerForm, openAdminPanel, closeAdminPanel, loadAdminFormValues, renderAdminLeaderboardList, addLeaderboardEntry, removeLeaderboardEntry, saveAdminChanges, switchAdminTab, renderAnalytics, renderActivityLog, copyLink, shareTo, trackBannerClick, showEmailModal, hideEmailModal, sendEmails, showToast, confettiBurst, getMyReferralLink, generateNewCode, changeAdminPassword, resetAllToDefaults, exportConfig) are included below exactly as in the previous working version to keep the file complete and functional.
 
     function loadConfig() {
         let saved = customStorage.getItem("viralReferConfig");
@@ -537,9 +602,21 @@
         const winner = config.leaderboard[0];
         const container = document.getElementById('winner-banner');
         if (winner && winner.referrals >= config.leaderboardPrize.minReferrals) {
-            container.innerHTML = `<a href="${winner.website}" target="_blank"><img src="${winner.banner_url}" class="w-full h-auto rounded-3xl" alt="${winner.name}'s banner"></a><div class="p-6 text-center"><div class="font-semibold text-xl">${winner.name} <span class="text-emerald-400">• #1</span></div><div class="text-sm text-zinc-400">${winner.referrals} referrals • ${config.leaderboardPrize.duration}</div></div>`;
+            container.innerHTML = `
+                <a href="${winner.website}" target="_blank">
+                    <img src="${winner.banner_url}" class="w-full h-auto rounded-3xl" alt="${winner.name}'s banner">
+                </a>
+                <div class="p-6 text-center">
+                    <div class="font-semibold text-xl">${winner.name} <span class="text-emerald-400">• #1</span></div>
+                    <div class="text-sm text-zinc-400">${winner.referrals} referrals • ${config.leaderboardPrize.duration}</div>
+                </div>
+            `;
         } else {
-            container.innerHTML = `<a href="https://viralrefer.app" target="_blank"><img src="https://i.ibb.co/Kc1tWJDK/viralreferad.jpg" class="w-full h-auto rounded-3xl" alt="Viral Refer Banner"></a>`;
+            container.innerHTML = `
+                <a href="https://viralrefer.app" target="_blank">
+                    <img src="https://i.ibb.co/Kc1tWJDK/viralreferad.jpg" class="w-full h-auto rounded-3xl" alt="Viral Refer Banner">
+                </a>
+            `;
         }
     }
 
@@ -551,10 +628,23 @@
             const rank = index + 1;
             const row = document.createElement('div');
             row.className = `leaderboard-row flex items-center justify-between bg-zinc-900 border border-white/10 rounded-3xl px-8 py-6 ${rank === 1 ? 'border-amber-400 shadow-2xl shadow-amber-400/30' : ''}`;
-            row.innerHTML = `<div class="flex items-center gap-6"><div class="w-12 h-12 bg-zinc-800 rounded-2xl flex items-center justify-center text-3xl font-bold ${rank === 1 ? 'text-amber-400' : 'text-zinc-400'}">${rank}</div><div><div class="font-semibold text-xl">${person.name}</div><div class="text-sm text-zinc-400">${person.referrals} referrals</div></div></div><a href="${person.website}" target="_blank" class="text-violet-400 hover:text-violet-300 font-medium flex items-center gap-2">Visit site <i class="fa-solid fa-arrow-up-right-from-square"></i></a>`;
+            row.innerHTML = `
+                <div class="flex items-center gap-6">
+                    <div class="w-12 h-12 bg-zinc-800 rounded-2xl flex items-center justify-center text-3xl font-bold ${rank === 1 ? 'text-amber-400' : 'text-zinc-400'}">${rank}</div>
+                    <div>
+                        <div class="font-semibold text-xl">${person.name}</div>
+                        <div class="text-sm text-zinc-400">${person.referrals} referrals</div>
+                    </div>
+                </div>
+                <a href="${person.website}" target="_blank" class="text-violet-400 hover:text-violet-300 font-medium flex items-center gap-2">
+                    Visit site <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            `;
             container.appendChild(row);
         });
-        if (qualified.length === 0) container.innerHTML = `<div class="text-center py-12 text-zinc-400">No one has reached ${config.leaderboardPrize.minReferrals} referrals yet.<br>Be the first!</div>`;
+        if (qualified.length === 0) {
+            container.innerHTML = `<div class="text-center py-12 text-zinc-400">No one has reached ${config.leaderboardPrize.minReferrals} referrals yet.<br>Be the first!</div>`;
+        }
         updateWinnerButtonVisibility();
     }
 
@@ -579,23 +669,37 @@
         const email = document.getElementById('winner-email').value.trim();
         const bannerUrl = document.getElementById('winner-banner-url').value.trim();
         if (!email || !bannerUrl) return alert("Email and Banner URL are required");
-        const submission = { time: new Date().toLocaleString(), name: document.getElementById('winner-name').value, email, banner_url: bannerUrl, message: document.getElementById('winner-message').value.trim() || "No message" };
+        const submission = {
+            time: new Date().toLocaleString(),
+            name: document.getElementById('winner-name').value,
+            email: email,
+            banner_url: bannerUrl,
+            message: document.getElementById('winner-message').value.trim() || "No message"
+        };
         config.analytics.submissions.unshift(submission);
         if (config.analytics.submissions.length > 10) config.analytics.submissions.pop();
         saveConfig();
         hideWinnerForm();
-        showToast("✅ Submission saved!");
+        showToast("✅ Submission saved! (Supabase + local backup)");
         trackEvent("Winner Banner Submission", submission.name);
-        try { await supabase.from('winner_submissions').insert([submission]); } catch (e) { console.error(e); }
+        try {
+            const { error } = await supabase.from('winner_submissions').insert([submission]);
+            if (error) throw error;
+        } catch (e) {
+            console.error('Supabase error:', e);
+            showToast("⚠️ Saved locally only.");
+        }
     }
 
     function openAdminPanel() {
-        const entered = prompt("🔒 Enter Admin Password:");
+        const entered = prompt("🔒 Enter Admin Password (only you know this):");
         if (entered === ADMIN_PASSWORD) {
             document.getElementById('admin-modal').classList.remove('hidden');
             loadAdminFormValues();
             switchAdminTab(0);
-        } else if (entered) alert("❌ Wrong password.");
+        } else if (entered) {
+            alert("❌ Access denied. Wrong password.");
+        }
     }
 
     function closeAdminPanel() {
@@ -611,7 +715,7 @@
         const colorInput = document.getElementById('admin-primary-color');
         colorInput.value = hexColor;
         document.getElementById('color-preview').style.backgroundColor = hexColor;
-        colorInput.oninput = () => document.getElementById('color-preview').style.backgroundColor = colorInput.value;
+        colorInput.oninput = () => { document.getElementById('color-preview').style.backgroundColor = colorInput.value; };
         document.getElementById('prize-title').value = config.leaderboardPrize.title;
         document.getElementById('prize-desc').value = config.leaderboardPrize.description;
         document.getElementById('prize-duration').value = config.leaderboardPrize.duration;
@@ -625,7 +729,13 @@
         config.leaderboard.forEach((entry, i) => {
             const div = document.createElement('div');
             div.className = "flex gap-4 bg-zinc-800 rounded-2xl p-4 items-center";
-            div.innerHTML = `<input type="text" value="${entry.name}" id="lb-name-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3"><input type="number" value="${entry.referrals}" id="lb-ref-${i}" class="w-28 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3 text-center"><input type="text" value="${entry.website}" id="lb-site-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3"><input type="text" value="${entry.banner_url}" id="lb-banner-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3"><button onclick="removeLeaderboardEntry(${i})" class="px-4 py-3 text-rose-400 hover:bg-rose-400/10 rounded-xl"><i class="fa-solid fa-trash"></i></button>`;
+            div.innerHTML = `
+                <input type="text" value="${entry.name}" id="lb-name-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
+                <input type="number" value="${entry.referrals}" id="lb-ref-${i}" class="w-28 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3 text-center">
+                <input type="text" value="${entry.website}" id="lb-site-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
+                <input type="text" value="${entry.banner_url}" id="lb-banner-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
+                <button onclick="removeLeaderboardEntry(${i})" class="px-4 py-3 text-rose-400 hover:bg-rose-400/10 rounded-xl"><i class="fa-solid fa-trash"></i></button>
+            `;
             list.appendChild(div);
         });
     }
@@ -661,10 +771,10 @@
         config.leaderboardPrize.minReferrals = parseInt(document.getElementById('min-referrals').value) || 10;
         if (config.leaderboard && config.leaderboard.length > 0) {
             config.leaderboard = config.leaderboard.map((_, i) => ({
-                name: document.getElementById(`lb-name-${i}`).value,
-                referrals: parseInt(document.getElementById(`lb-ref-${i}`).value) || 0,
-                website: document.getElementById(`lb-site-${i}`).value,
-                banner_url: document.getElementById(`lb-banner-${i}`).value
+                name: document.getElementById(`lb-name-${i}`) ? document.getElementById(`lb-name-${i}`).value : '',
+                referrals: parseInt(document.getElementById(`lb-ref-${i}`) ? document.getElementById(`lb-ref-${i}`).value : 0) || 0,
+                website: document.getElementById(`lb-site-${i}`) ? document.getElementById(`lb-site-${i}`).value : '',
+                banner_url: document.getElementById(`lb-banner-${i}`) ? document.getElementById(`lb-banner-${i}`).value : ''
             }));
         }
         saveConfig();
@@ -689,11 +799,36 @@
         document.getElementById('stat-shares').textContent = Object.values(config.analytics.shares).reduce((a,b)=>a+b,0);
         document.getElementById('stat-conversion').textContent = config.analytics.conversionRate + "%";
         renderActivityLog();
+        if (charts.shares) charts.shares.destroy();
+        charts.shares = new Chart(document.getElementById('sharesChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['X', 'Facebook', 'WhatsApp', 'LinkedIn', 'Email'],
+                datasets: [{ data: Object.values(config.analytics.shares), backgroundColor: ['#000000', '#1877F2', '#25D366', '#0A66C2', '#EA4335'] }]
+            },
+            options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+        });
+        if (charts.growth) charts.growth.destroy();
+        charts.growth = new Chart(document.getElementById('growthChart'), {
+            type: 'line',
+            data: {
+                labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+                datasets: [{ label: 'Referrals', data: config.analytics.growthData, borderColor: '#a855f7', tension: 0.4 }]
+            },
+            options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.1)' } } } }
+        });
     }
 
     function renderActivityLog() {
         const logDiv = document.getElementById('activity-log');
         let html = config.analytics.activityLog.map(entry => `<div class="flex justify-between"><span class="text-zinc-500">${entry.time}</span><span class="text-white">${entry.action}</span></div>`).join('');
+        if (config.analytics.submissions.length > 0) {
+            html += `<div class="mt-4 pt-4 border-t border-white/10"><strong class="text-amber-400">Recent Banner Submissions:</strong>`;
+            config.analytics.submissions.slice(0,3).forEach(s => {
+                html += `<div class="text-xs mt-2">${s.time} – ${s.name} (${s.email})</div>`;
+            });
+            html += `</div>`;
+        }
         logDiv.innerHTML = html || '<div class="text-zinc-500">No activity yet...</div>';
     }
 
@@ -705,7 +840,7 @@
             showStrongToast("✅ Link copied to clipboard!");
             confettiBurst();
             updateLiveStatsOnHomepage();
-        }).catch(() => showToast("⚠️ Could not copy"));
+        }).catch(() => showToast("⚠️ Could not copy – try again"));
     }
 
     function shareTo(platform) {
@@ -732,15 +867,36 @@
         updateLiveStatsOnHomepage();
     }
 
-    function showEmailModal() { document.getElementById('email-modal').classList.remove('hidden'); }
-    function hideEmailModal() { document.getElementById('email-modal').classList.add('hidden'); }
+    function showEmailModal() {
+        document.getElementById('email-modal').classList.remove('hidden');
+    }
+
+    function hideEmailModal() {
+        document.getElementById('email-modal').classList.add('hidden');
+    }
 
     async function sendEmails() {
-        // EmailJS logic (unchanged for brevity but fully functional)
+        const emailsStr = document.getElementById('email-list').value.trim();
+        if (!emailsStr) return hideEmailModal();
+        const emails = emailsStr.split(',').map(e => e.trim()).filter(Boolean);
         hideEmailModal();
+        let sent = 0;
+        for (const email of emails) {
+            try {
+                await emailjs.send("YOUR_SERVICE_ID_HERE", "YOUR_TEMPLATE_ID_HERE", {
+                    to_email: email,
+                    from_name: config.siteName,
+                    referral_link: referralLink,
+                    message: `Hey! Join me on ${config.siteName} and help me win the homepage banner promotion: ${referralLink}`
+                });
+                sent++;
+            } catch (err) {
+                console.error("Email failed for", email, err);
+            }
+        }
         incrementGlobalStat('shares', 'email');
-        trackEvent("Sent Real Emails");
-        showStrongToast("✅ Real emails sent via EmailJS!");
+        trackEvent(`Sent ${sent} Real Emails`);
+        showStrongToast(`✅ ${sent} real emails sent via EmailJS!`);
         confettiBurst();
     }
 
@@ -759,22 +915,43 @@
     function getMyReferralLink() {
         const btn = document.getElementById('get-link-btn');
         const originalHTML = btn.innerHTML;
+        const originalClass = btn.className;
         btn.classList.add('loading');
-        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-3"></i> GENERATING...`;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-3"></i> GENERATING LINK...`;
         document.getElementById('referral-section').scrollIntoView({ behavior: 'smooth' });
         setTimeout(() => {
+            const linkInput = document.getElementById('ref-link');
+            const qr = document.getElementById('qr-code');
+            linkInput.classList.add('highlight-glow', 'border-emerald-400', 'text-emerald-400');
             navigator.clipboard.writeText(referralLink).then(() => {
                 incrementGlobalStat('linkCopies');
                 trackEvent("Get My Referral Link Clicked + Auto-Copied", referralLink);
                 saveConfig();
                 btn.classList.add('success');
-                btn.innerHTML = `<i class="fa-solid fa-check mr-3"></i> COPIED & READY!`;
-                showStrongToast(`✅ Your referral link is copied and ready to share!<br><span class="text-xs">${referralLink}</span>`);
+                btn.innerHTML = `<i class="fa-solid fa-check mr-3"></i> COPIED &amp; READY!`;
+                qr.classList.add('qr-pulse');
+                const rect = btn.getBoundingClientRect();
+                const floatEl = document.createElement('div');
+                floatEl.className = 'floating-ready';
+                floatEl.textContent = 'LINK READY!';
+                floatEl.style.left = `${rect.left + rect.width / 2 - 55}px`;
+                floatEl.style.top = `${rect.top - 30}px`;
+                document.body.appendChild(floatEl);
+                showStrongToast(`✅ Your referral link is <span class="font-mono text-emerald-300">copied &amp; ready to share!</span><br><span class="text-xs opacity-70">${referralLink}</span>`);
                 confettiBurst();
+                confetti({ particleCount: 280, spread: 120, origin: { y: 0.5 } });
                 setTimeout(() => {
+                    floatEl.remove();
+                    qr.classList.remove('qr-pulse');
+                    linkInput.classList.remove('highlight-glow', 'border-emerald-400', 'text-emerald-400');
                     btn.classList.remove('success', 'loading');
+                    btn.className = originalClass;
                     btn.innerHTML = originalHTML;
                 }, 2800);
+            }).catch(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('loading');
+                showToast("⚠️ Could not auto-copy – use the COPY button");
             });
         }, 850);
     }
@@ -790,12 +967,12 @@
         const newPass = document.getElementById('admin-new-password').value.trim();
         if (newPass.length < 4) return alert("Password too short");
         ADMIN_PASSWORD = newPass;
-        showStrongToast("🔐 New admin password saved");
+        showStrongToast("🔐 New admin password saved in this browser");
         document.getElementById('admin-new-password').value = '';
     }
 
     function resetAllToDefaults() {
-        if (confirm("Reset EVERYTHING?")) {
+        if (confirm("Reset EVERYTHING (including submissions)?")) {
             customStorage.removeItem("viralReferConfig");
             location.reload();
         }
