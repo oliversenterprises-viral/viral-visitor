@@ -76,8 +76,7 @@
                 Share <span id="hero-site-name" class="font-semibold text-white">YourSite</span> — the #1 referrer wins a full homepage banner promotion!
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button onclick="getMyReferralLink()" id="get-link-btn"
-                        class="get-link-btn px-10 py-6 bg-white text-zinc-950 font-semibold text-lg rounded-3xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-2xl shadow-violet-500/30 group">
+                <button onclick="getMyReferralLink()" id="get-link-btn" class="get-link-btn px-10 py-6 bg-white text-zinc-950 font-semibold text-lg rounded-3xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-2xl shadow-violet-500/30 group">
                     <i class="fa-solid fa-gift group-active:rotate-12 transition-transform"></i>
                     Get my referral link
                 </button>
@@ -179,6 +178,7 @@
                 <button onclick="switchAdminTab(3)" id="tab-3" class="admin-tab px-8 py-5 font-semibold">ADVANCED</button>
             </div>
             <div class="flex-1 overflow-auto p-8">
+                <!-- TAB 0 -->
                 <div id="tab-content-0">
                     <div class="grid grid-cols-2 gap-8">
                         <div><label class="block text-xs tracking-widest text-zinc-400 mb-2">WEBSITE NAME</label><input id="admin-site-name" type="text" class="w-full bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none"></div>
@@ -189,6 +189,7 @@
                         <div class="flex gap-4"><input id="admin-primary-color" type="text" maxlength="7" class="w-40 bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none font-mono"><div id="color-preview" class="w-12 h-12 rounded-2xl border border-white/20"></div></div>
                     </div>
                 </div>
+                <!-- TAB 1 -->
                 <div id="tab-content-1" class="hidden space-y-10">
                     <div class="border border-white/10 rounded-3xl p-8">
                         <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Grand Prize Settings</h3>
@@ -207,6 +208,7 @@
                         <div id="admin-leaderboard-list" class="space-y-4"></div>
                     </div>
                 </div>
+                <!-- TAB 2 - REAL-TIME ANALYTICS DASHBOARD -->
                 <div id="tab-content-2" class="hidden">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div class="analytics-card bg-zinc-900 border border-white/10 rounded-3xl p-6">
@@ -241,6 +243,7 @@
                         <div id="activity-log" class="text-sm space-y-3 text-zinc-400"></div>
                     </div>
                 </div>
+                <!-- TAB 3 -->
                 <div id="tab-content-3" class="hidden space-y-8">
                     <div class="border border-white/10 rounded-3xl p-8">
                         <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><i class="fa-solid fa-key"></i> Security</h3>
@@ -406,7 +409,16 @@
 
     let referralLink = "";
     let charts = {};
-    let analyticsPollInterval = null;
+    let analyticsSubscription = null;
+
+    async function ensureAnalyticsRow() {
+        try {
+            const { data } = await supabase.from('site_analytics').select('id').eq('id', 1).single();
+            if (!data) {
+                await supabase.from('site_analytics').insert([{ id: 1, ...config.analytics }]);
+            }
+        } catch (e) {}
+    }
 
     async function loadGlobalAnalytics() {
         try {
@@ -422,8 +434,11 @@
     }
 
     async function incrementGlobalStat(key, amount = 1) {
-        if (typeof config.analytics[key] === 'number') config.analytics[key] += amount;
-        else if (key === 'shares' && typeof amount === 'string') config.analytics.shares[amount] = (config.analytics.shares[amount] || 0) + 1;
+        if (typeof config.analytics[key] === 'number') {
+            config.analytics[key] += amount;
+        } else if (key === 'shares' && typeof amount === 'string') {
+            config.analytics.shares[amount] = (config.analytics.shares[amount] || 0) + 1;
+        }
         await saveGlobalAnalytics();
         if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderAnalytics();
     }
@@ -468,11 +483,11 @@
     async function init() {
         loadConfig();
         await testSupabaseConnection();
+        await ensureAnalyticsRow();
         await loadGlobalAnalytics();
         await createMyRefCodeIfNeeded();
         await loadLeaderboardFromSupabase();
 
-        // ONLY COUNT VISITOR ONCE PER BROWSER SESSION
         if (!customStorage.getItem('visitorCounted')) {
             await incrementGlobalStat('visitors');
             customStorage.setItem('visitorCounted', 'true');
@@ -493,7 +508,7 @@
         updateWinnerButtonVisibility();
         trackEvent("Page View", "Homepage loaded");
 
-        console.log('%c🚀 Viral Refer is 100% LIVE with GLOBAL visitor tracking + REAL email sending!', 'color:#a855f7; font-weight:bold; font-size:16px');
+        console.log('%c🚀 Viral Refer is 100% LIVE with REAL-TIME analytics dashboard!', 'color:#a855f7; font-weight:bold; font-size:16px');
     }
 
     function loadConfig() {
@@ -637,7 +652,10 @@
 
     function closeAdminPanel() {
         document.getElementById('admin-modal').classList.add('hidden');
-        if (analyticsPollInterval) clearInterval(analyticsPollInterval);
+        if (analyticsSubscription) {
+            supabase.removeChannel(analyticsSubscription);
+            analyticsSubscription = null;
+        }
     }
 
     function loadAdminFormValues() {
@@ -727,12 +745,26 @@
         }
         if (tab === 2) {
             renderAnalytics();
-            if (analyticsPollInterval) clearInterval(analyticsPollInterval);
-            analyticsPollInterval = setInterval(() => {
-                loadGlobalAnalytics().then(() => renderAnalytics());
-            }, 5000);
+            if (!analyticsSubscription) {
+                analyticsSubscription = supabase
+                    .channel('analytics-realtime')
+                    .on(
+                        'postgres_changes',
+                        { event: '*', schema: 'public', table: 'site_analytics', filter: 'id=eq.1' },
+                        (payload) => {
+                            if (payload.new) {
+                                config.analytics = { ...config.analytics, ...payload.new };
+                                renderAnalytics();
+                            }
+                        }
+                    )
+                    .subscribe();
+            }
         } else {
-            if (analyticsPollInterval) clearInterval(analyticsPollInterval);
+            if (analyticsSubscription) {
+                supabase.removeChannel(analyticsSubscription);
+                analyticsSubscription = null;
+            }
         }
     }
 
