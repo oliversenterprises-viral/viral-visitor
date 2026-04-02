@@ -209,7 +209,7 @@
                         <div id="admin-leaderboard-list" class="space-y-4"></div>
                     </div>
                 </div>
-                <!-- TAB 2 - GLOBAL ANALYTICS (LIVE) -->
+                <!-- TAB 2 - REAL-TIME ANALYTICS DASHBOARD -->
                 <div id="tab-content-2" class="hidden">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div class="analytics-card bg-zinc-900 border border-white/10 rounded-3xl p-6">
@@ -382,7 +382,6 @@
     const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID_HERE";
     const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID_HERE";
 
-    // Password is now hidden via base64 (original value is still ViralSecret2026!K9pQ2mX)
     let ADMIN_PASSWORD = atob("VmlyYWxTZWNyZXQyMDI2IUs5cFEybVg=");
 
     let myRefCode = customStorage.getItem('myRefCode');
@@ -413,7 +412,7 @@
 
     let referralLink = "";
     let charts = {};
-    let analyticsPollInterval = null;
+    let analyticsSubscription = null;
 
     async function loadGlobalAnalytics() {
         try {
@@ -482,6 +481,7 @@
         await createMyRefCodeIfNeeded();
         await loadLeaderboardFromSupabase();
 
+        // Only count visitor once per browser session
         if (!customStorage.getItem('visitorCounted')) {
             await incrementGlobalStat('visitors');
             customStorage.setItem('visitorCounted', 'true');
@@ -646,7 +646,10 @@
 
     function closeAdminPanel() {
         document.getElementById('admin-modal').classList.add('hidden');
-        if (analyticsPollInterval) clearInterval(analyticsPollInterval);
+        if (analyticsSubscription) {
+            supabase.removeChannel(analyticsSubscription);
+            analyticsSubscription = null;
+        }
     }
 
     function loadAdminFormValues() {
@@ -734,14 +737,31 @@
             document.getElementById(`tab-content-${i}`).classList.toggle('hidden', i !== tab);
             document.getElementById(`tab-${i}`).classList.toggle('admin-tab-active', i === tab);
         }
+
         if (tab === 2) {
+            // Activate real-time analytics dashboard
             renderAnalytics();
-            if (analyticsPollInterval) clearInterval(analyticsPollInterval);
-            analyticsPollInterval = setInterval(() => {
-                loadGlobalAnalytics().then(() => renderAnalytics());
-            }, 5000);
+            if (!analyticsSubscription) {
+                analyticsSubscription = supabase
+                    .channel('analytics-realtime')
+                    .on(
+                        'postgres_changes',
+                        { event: '*', schema: 'public', table: 'site_analytics', filter: 'id=eq.1' },
+                        (payload) => {
+                            if (payload.new) {
+                                config.analytics = { ...config.analytics, ...payload.new };
+                                renderAnalytics();
+                            }
+                        }
+                    )
+                    .subscribe();
+            }
         } else {
-            if (analyticsPollInterval) clearInterval(analyticsPollInterval);
+            // Clean up realtime subscription
+            if (analyticsSubscription) {
+                supabase.removeChannel(analyticsSubscription);
+                analyticsSubscription = null;
+            }
         }
     }
 
