@@ -842,23 +842,43 @@
   async function sendEmails() {
     const emailsStr = document.getElementById('email-list').value.trim();
     if (!emailsStr) return hideEmailModal();
+    
     const emails = emailsStr.split(',').map(e => e.trim()).filter(Boolean);
+    if (emails.length === 0) return;
+
     hideEmailModal();
     let sent = 0;
+    let failed = 0;
+
+    showToast(`🚀 Sending ${emails.length} emails...`);
+
     for (const email of emails) {
       try {
         await emailjs.send("service_0kjgf6o", "template_wx49vji", {
+          to_email: email,
           from_name: config.siteName,
           site_name: config.siteName,
-          referral_link: referralLink
+          referral_link: referralLink,
+          to_name: email.split('@')[0]
         });
         sent++;
-      } catch (err) { console.error("Email failed for", email, err); }
+        console.log(`✅ Email sent successfully to ${email}`);
+      } catch (err) {
+        console.error(`❌ Failed to send email to ${email}:`, err);
+        failed++;
+      }
     }
+
     incrementGlobalStat('shares', 'email');
-    trackEvent(`Sent ${sent} Real Emails`);
-    showStrongToast(`✅ ${sent} real emails sent via EmailJS!`);
-    confettiBurst();
+    trackEvent(`Sent ${sent} emails (${failed} failed)`);
+    
+    if (sent > 0) {
+      showStrongToast(`✅ ${sent} real emails sent via EmailJS!`);
+      confettiBurst();
+    }
+    if (failed > 0) {
+      showToast(`${failed} emails failed - check console (F12) for details`);
+    }
   }
 
   function showToast(message) {
@@ -968,7 +988,6 @@
 
     updateLiveStatsOnHomepage();
 
-    // DOUBLE-CLICK THE "V" LOGO TO OPEN ADMIN PANEL
     const logoContainer = document.querySelector('.flex.items-center.gap-3');
     if (logoContainer) {
       logoContainer.style.cursor = 'pointer';
@@ -979,7 +998,6 @@
     console.log('%c🚀 FULLY REALTIME ENABLED — Leaderboard + Winner Submissions are now live!', 'color:#10b981; font-weight:bold; font-size:16px');
   }
 
-  // ALT + A keyboard shortcut to open admin panel
   document.addEventListener('keydown', function(e) {
     if (e.altKey && (e.key === 'a' || e.key === 'A')) {
       e.preventDefault();
