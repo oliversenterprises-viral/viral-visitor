@@ -151,24 +151,32 @@
       </div>
       <div class="flex-1">
         <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><i class="fa-solid fa-share-nodes text-amber-400"></i> Share everywhere</h3>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
           <button onclick="shareTo('x')" class="share-btn flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 p-6 rounded-3xl group">
             <div class="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-3xl">𝕏</div>
-            <div class="text-left"><div class="font-semibold">Post on X</div><div class="text-xs text-zinc-400">Reach millions instantly</div></div>
+            <div class="text-left"><div class="font-semibold">X</div><div class="text-xs text-zinc-400">Twitter</div></div>
           </button>
           <button onclick="shareTo('facebook')" class="share-btn flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 p-6 rounded-3xl group">
             <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl"><i class="fa-brands fa-facebook-f"></i></div>
-            <div class="text-left"><div class="font-semibold">Share on Facebook</div><div class="text-xs text-zinc-400">Tell your network</div></div>
+            <div class="text-left"><div class="font-semibold">Facebook</div><div class="text-xs text-zinc-400">Network</div></div>
           </button>
           <button onclick="shareTo('whatsapp')" class="share-btn flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 p-6 rounded-3xl group">
             <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white text-3xl"><i class="fa-brands fa-whatsapp"></i></div>
-            <div class="text-left"><div class="font-semibold">WhatsApp</div><div class="text-xs text-zinc-400">Send privately</div></div>
+            <div class="text-left"><div class="font-semibold">WhatsApp</div><div class="text-xs text-zinc-400">Private</div></div>
           </button>
           <button onclick="shareTo('linkedin')" class="share-btn flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 p-6 rounded-3xl group">
             <div class="w-12 h-12 bg-blue-700 rounded-2xl flex items-center justify-center text-white text-3xl"><i class="fa-brands fa-linkedin-in"></i></div>
-            <div class="text-left"><div class="font-semibold">LinkedIn</div><div class="text-xs text-zinc-400">Professional reach</div></div>
+            <div class="text-left"><div class="font-semibold">LinkedIn</div><div class="text-xs text-zinc-400">Professional</div></div>
           </button>
-          <button onclick="showEmailModal()" class="share-btn col-span-2 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 p-6 rounded-3xl flex items-center justify-between group">
+          <button onclick="shareTo('telegram')" class="share-btn flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 p-6 rounded-3xl group">
+            <div class="w-12 h-12 bg-[#229ED9] rounded-2xl flex items-center justify-center text-white text-3xl"><i class="fa-brands fa-telegram-plane"></i></div>
+            <div class="text-left"><div class="font-semibold">Telegram</div><div class="text-xs text-zinc-400">Groups &amp; channels</div></div>
+          </button>
+          <button onclick="shareMore()" class="share-btn flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 p-6 rounded-3xl group">
+            <div class="w-12 h-12 bg-zinc-700 rounded-2xl flex items-center justify-center text-white text-3xl"><i class="fa-solid fa-share-nodes"></i></div>
+            <div class="text-left"><div class="font-semibold">More</div><div class="text-xs text-zinc-400">Instagram, Messages, etc.</div></div>
+          </button>
+          <button onclick="showEmailModal()" class="share-btn col-span-2 md:col-span-3 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 p-6 rounded-3xl flex items-center justify-between group">
             <div class="flex items-center gap-4"><i class="fa-solid fa-envelope text-4xl"></i>
               <div><div class="font-semibold text-lg">Invite via Email</div><div class="text-sm opacity-90">Send personalized REAL emails</div></div>
             </div>
@@ -197,7 +205,7 @@
     </div>
   </div>
 
-  <!-- ADMIN PANEL (now with EMBED tab) -->
+  <!-- ADMIN PANEL (with EMBED tab) -->
   <div id="admin-modal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center z-[300]">
     <div class="bg-zinc-900 rounded-3xl w-full max-w-5xl mx-6 max-h-[92vh] overflow-hidden flex flex-col">
       <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between">
@@ -220,7 +228,6 @@
         <button onclick="switchAdminTab(4)" id="tab-4" class="admin-tab px-8 py-5 font-semibold">ADVANCED</button>
       </div>
       <div class="flex-1 overflow-auto p-8">
-        <!-- Tab 0: GENERAL -->
         <div id="tab-content-0">
           <div class="grid grid-cols-2 gap-8">
             <div><label class="block text-xs tracking-widest text-zinc-400 mb-2">WEBSITE NAME</label><input id="admin-site-name" type="text" class="w-full bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none"></div>
@@ -231,8 +238,6 @@
             <div class="flex gap-4"><input id="admin-primary-color" type="text" maxlength="7" class="w-40 bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none font-mono"><div id="color-preview" class="w-12 h-12 rounded-2xl border border-white/20"></div></div>
           </div>
         </div>
-
-        <!-- Tab 1: LEADERBOARD PRIZE -->
         <div id="tab-content-1" class="hidden space-y-10">
           <div class="border border-white/10 rounded-3xl p-8">
             <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Grand Prize Settings</h3>
@@ -251,8 +256,6 @@
             <div id="admin-leaderboard-list" class="space-y-4"></div>
           </div>
         </div>
-
-        <!-- Tab 2: ANALYTICS -->
         <div id="tab-content-2" class="hidden">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div class="analytics-card bg-zinc-900 border border-white/10 rounded-3xl p-6">
@@ -287,8 +290,6 @@
             <div id="activity-log" class="text-sm space-y-3 text-zinc-400"></div>
           </div>
         </div>
-
-        <!-- Tab 3: EMBED (NEW - highest impact) -->
         <div id="tab-content-3" class="hidden">
           <div class="border border-white/10 rounded-3xl p-8">
             <h3 class="text-lg font-semibold mb-4">One-Click Embed Code</h3>
@@ -300,8 +301,6 @@
             <p class="text-xs text-zinc-500 text-center mt-6">Replace YOUR-DEPLOYED-URL.com with the actual link after you deploy this file.</p>
           </div>
         </div>
-
-        <!-- Tab 4: ADVANCED -->
         <div id="tab-content-4" class="hidden space-y-8">
           <div class="border border-white/10 rounded-3xl p-8">
             <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><i class="fa-solid fa-key"></i> Security</h3>
@@ -426,8 +425,7 @@
     auth: { storage: customStorage, persistSession: true, autoRefreshToken: true }
   });
 
-  // Secure password (hashed version of original)
-  let ADMIN_PASSWORD_HASH = "a1b2c3d4e5f6"; // This is a secure hash of the original password - do not change manually
+  let ADMIN_PASSWORD_HASH = "a1b2c3d4e5f6";
   const ORIGINAL_PASSWORD = atob("VmlyYWxTZWNyZXQyMDI2IUs5cFEybVg=");
 
   function hashPassword(pw) {
@@ -457,7 +455,7 @@
     analytics: {
       visitors: 0,
       linkCopies: 0,
-      shares: { x: 0, facebook: 0, whatsapp: 0, linkedin: 0, email: 0 },
+      shares: { x: 0, facebook: 0, whatsapp: 0, linkedin: 0, email: 0, telegram: 0 },
       bannerClicks: 0,
       conversionRate: 0,
       growthData: [0,0,0,0,0,0,0],
@@ -475,7 +473,7 @@
 
   async function resetGlobalStats() {
     if (!confirm("⚠️ This will permanently reset ALL global stats to zero.\n\nContinue?")) return;
-    config.analytics = { visitors: 0, linkCopies: 0, shares: { x: 0, facebook: 0, whatsapp: 0, linkedin: 0, email: 0 }, bannerClicks: 0, conversionRate: 0, growthData: [0,0,0,0,0,0,0], activityLog: [], submissions: [] };
+    config.analytics = { visitors: 0, linkCopies: 0, shares: { x: 0, facebook: 0, whatsapp: 0, linkedin: 0, email: 0, telegram: 0 }, bannerClicks: 0, conversionRate: 0, growthData: [0,0,0,0,0,0,0], activityLog: [], submissions: [] };
     await saveGlobalAnalytics();
     customStorage.removeItem("viralReferConfig");
     showToast("✅ All global stats permanently reset to zero");
@@ -593,21 +591,15 @@
     config.leaderboard = data || [];
   }
 
-  // Improved anti-cheat with device fingerprint
   function getDeviceFingerprint() {
     return btoa(navigator.userAgent + screen.width + screen.height + navigator.language);
   }
 
   async function incrementReferral(refCode) {
     if (!refCode) return;
-    
     const fingerprint = getDeviceFingerprint();
     const alreadyCounted = customStorage.getItem(`counted_${refCode}_${fingerprint}`);
-    if (alreadyCounted) {
-      console.log('%c⛔ Referral already counted for this device', 'color:orange');
-      return;
-    }
-    
+    if (alreadyCounted) return;
     customStorage.setItem(`counted_${refCode}_${fingerprint}`, 'true');
     await supabase.from('referrers').update({ referrals: supabase.raw('referrals + 1') }).eq('ref_code', refCode);
     console.log('%c✅ Referral counted with strong anti-cheat', 'color:#22c55e');
@@ -624,9 +616,7 @@
     if (!myRefCode) return;
     try {
       const { data } = await supabase.from('referrers').select('referrals').eq('ref_code', myRefCode).single();
-      if (data) {
-        document.getElementById('my-referrals-count').textContent = data.referrals || 0;
-      }
+      if (data) document.getElementById('my-referrals-count').textContent = data.referrals || 0;
     } catch (e) {}
   }
 
@@ -634,13 +624,7 @@
     let saved = customStorage.getItem("viralReferConfig");
     if (saved) {
       const savedConfig = JSON.parse(saved);
-      config = {
-        ...config,
-        ...savedConfig,
-        leaderboardPrize: { ...config.leaderboardPrize, ...(savedConfig.leaderboardPrize || {}) },
-        leaderboard: savedConfig.leaderboard || config.leaderboard,
-        analytics: { ...config.analytics, ...(savedConfig.analytics || {}) }
-      };
+      config = { ...config, ...savedConfig, leaderboardPrize: { ...config.leaderboardPrize, ...(savedConfig.leaderboardPrize || {}) }, leaderboard: savedConfig.leaderboard || config.leaderboard, analytics: { ...config.analytics, ...(savedConfig.analytics || {}) } };
     }
     document.documentElement.style.setProperty('--primary', config.primaryColor);
   }
@@ -847,8 +831,8 @@
     charts.shares = new Chart(document.getElementById('sharesChart'), {
       type: 'doughnut',
       data: {
-        labels: ['X', 'Facebook', 'WhatsApp', 'LinkedIn', 'Email'],
-        datasets: [{ data: Object.values(config.analytics.shares), backgroundColor: ['#000000', '#1877F2', '#25D366', '#0A66C2', '#EA4335'] }]
+        labels: ['X', 'Facebook', 'WhatsApp', 'LinkedIn', 'Email', 'Telegram'],
+        datasets: [{ data: Object.values(config.analytics.shares), backgroundColor: ['#000000', '#1877F2', '#25D366', '#0A66C2', '#EA4335', '#229ED9'] }]
       },
       options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
     });
@@ -898,6 +882,7 @@
     else if (platform === 'facebook') url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`;
     else if (platform === 'whatsapp') url = `https://wa.me/?text=${encodeURIComponent(message)}`;
     else if (platform === 'linkedin') url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink)}`;
+    else if (platform === 'telegram') url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
     if (url) window.open(url, '_blank');
     incrementGlobalStat('shares', platform);
     trackEvent("Shared on " + platform.toUpperCase());
@@ -905,6 +890,26 @@
     confettiBurst();
     updateLiveStatsOnHomepage();
     showStrongToast("✅ Shared successfully!");
+  }
+
+  async function shareMore() {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: config.siteName,
+          text: `Join me on ${config.siteName} – help me win the homepage banner!`,
+          url: referralLink
+        });
+        incrementGlobalStat('shares', 'more');
+        trackEvent("Shared via native More button");
+        confettiBurst();
+        showStrongToast("✅ Shared via your device!");
+      } catch (err) {
+        if (err.name !== 'AbortError') copyLink();
+      }
+    } else {
+      copyLink();
+    }
   }
 
   function trackBannerClick() {
@@ -1101,7 +1106,7 @@
       logoContainer.addEventListener('dblclick', () => openAdminPanel());
     }
 
-    console.log('%c🚀 FULLY REALTIME ENABLED + STRONG ANTI-CHEAT + EMBED READY!', 'color:#22c55e; font-weight:bold; font-size:16px');
+    console.log('%c🚀 FULLY REALTIME ENABLED + STRONG ANTI-CHEAT + MORE SHARE OPTIONS ADDED!', 'color:#22c55e; font-weight:bold; font-size:16px');
   }
 
   document.addEventListener('keydown', function(e) {
@@ -1111,7 +1116,7 @@
     }
   });
 
-  console.log('%c✅ This version is now the strongest single-file viral refer system possible', 'color:#a855f7; font-weight:bold');
+  console.log('%c✅ This version now has maximum sharing reach for 2026 virality', 'color:#a855f7; font-weight:bold');
 
   window.openAdminPanel = openAdminPanel;
   window.closeAdminPanel = closeAdminPanel;
@@ -1125,6 +1130,7 @@
   window.trackBannerClick = trackBannerClick;
   window.copyLink = copyLink;
   window.shareTo = shareTo;
+  window.shareMore = shareMore;
   window.showEmailModal = showEmailModal;
   window.hideEmailModal = hideEmailModal;
   window.sendEmails = sendEmails;
