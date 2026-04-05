@@ -232,6 +232,26 @@
         </div>
     </section>
 
+    <!-- STICKY VIRAL SHARE BAR -->
+    <div class="bg-emerald-600 text-black py-4 sticky bottom-0 z-50 shadow-2xl flex items-center justify-center gap-x-6 gap-y-3 flex-wrap px-6">
+        <span class="font-semibold text-sm">Share this page & earn more referrals →</span>
+        <button onclick="shareTo('twitter')" class="flex items-center gap-2 hover:scale-110 transition font-medium">
+            <i class="fab fa-x-twitter"></i> X
+        </button>
+        <button onclick="shareTo('facebook')" class="flex items-center gap-2 hover:scale-110 transition font-medium">
+            <i class="fab fa-facebook"></i> Facebook
+        </button>
+        <button onclick="shareTo('linkedin')" class="flex items-center gap-2 hover:scale-110 transition font-medium">
+            <i class="fab fa-linkedin"></i> LinkedIn
+        </button>
+        <button onclick="shareTo('whatsapp')" class="flex items-center gap-2 hover:scale-110 transition font-medium">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+        </button>
+        <button onclick="copyLink()" class="flex items-center gap-2 bg-black text-white px-6 py-2 rounded-3xl hover:scale-110 transition">
+            <i class="fas fa-copy"></i> Copy Link
+        </button>
+    </div>
+
     <!-- FOOTER -->
     <footer class="bg-black border-t border-white/10 py-12 text-center text-xs text-gray-500">
         <p>© 2026 Pick and Profit • Not affiliated with any other brand</p>
@@ -267,7 +287,7 @@
 
         // 48-hour countdown
         function startCountdown() {
-            let time = 48 * 60 * 60; // seconds
+            let time = 48 * 60 * 60;
             const timer = document.getElementById('countdown');
             setInterval(() => {
                 if (time <= 0) return;
@@ -334,7 +354,8 @@
             if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
             else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
             else if (platform === 'linkedin') shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-            window.open(shareUrl, '_blank');
+            else if (platform === 'whatsapp') shareUrl = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
+            if (shareUrl) window.open(shareUrl, '_blank');
         }
 
         // Initialize everything
