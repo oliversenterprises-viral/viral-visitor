@@ -447,7 +447,6 @@
   }
 
   function startRealtime() {
-    // Global Analytics Realtime
     if (!analyticsSubscription) {
       analyticsSubscription = supabase.channel('public-live-stats')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'site_analytics', filter: 'id=eq.1' }, (payload) => {
@@ -460,7 +459,6 @@
         .subscribe();
     }
 
-    // Leaderboard Realtime
     if (!leaderboardSubscription) {
       leaderboardSubscription = supabase.channel('public-leaderboard')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'referrers' }, async () => {
@@ -473,7 +471,6 @@
         .subscribe();
     }
 
-    // Winner Submissions Realtime
     if (!submissionsSubscription) {
       submissionsSubscription = supabase.channel('public-submissions')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'winner_submissions' }, (payload) => {
@@ -552,7 +549,13 @@
     let saved = customStorage.getItem("viralReferConfig");
     if (saved) {
       const savedConfig = JSON.parse(saved);
-      config = { ...config, ...savedConfig, leaderboardPrize: { ...config.leaderboardPrize, ...(savedConfig.leaderboardPrize || {}) }, leaderboard: savedConfig.leaderboard || config.leaderboard, analytics: { ...config.analytics, ...(savedConfig.analytics || {}) } };
+      config = {
+        ...config,
+        ...savedConfig,
+        leaderboardPrize: { ...config.leaderboardPrize, ...(savedConfig.leaderboardPrize || {}) },
+        leaderboard: savedConfig.leaderboard || config.leaderboard,
+        analytics: { ...config.analytics, ...(savedConfig.analytics || {}) }
+      };
     }
     document.documentElement.style.setProperty('--primary', config.primaryColor);
   }
@@ -628,7 +631,13 @@
     const email = document.getElementById('winner-email').value.trim();
     const bannerUrl = document.getElementById('winner-banner-url').value.trim();
     if (!email || !bannerUrl) return alert("Email and Banner URL are required");
-    const submission = { time: new Date().toLocaleString(), name: document.getElementById('winner-name').value, email, banner_url: bannerUrl, message: document.getElementById('winner-message').value.trim() || "No message" };
+    const submission = {
+      time: new Date().toLocaleString(),
+      name: document.getElementById('winner-name').value,
+      email: email,
+      banner_url: bannerUrl,
+      message: document.getElementById('winner-message').value.trim() || "No message"
+    };
     config.analytics.submissions.unshift(submission);
     if (config.analytics.submissions.length > 10) config.analytics.submissions.pop();
     saveConfig();
@@ -649,10 +658,11 @@
     } else if (entered) alert("❌ Wrong password");
   }
 
-  function closeAdminPanel() { document.getElementById('admin-modal').classList.add('hidden'); }
+  function closeAdminPanel() {
+    document.getElementById('admin-modal').classList.add('hidden');
+  }
 
   function loadAdminFormValues() {
-    // Full form loading code (same as previous versions)
     document.getElementById('admin-site-name').value = config.siteName;
     document.getElementById('admin-base-url').value = config.baseUrl;
     document.getElementById('admin-reward-text').value = config.rewardText;
@@ -675,7 +685,13 @@
     config.leaderboard.forEach((entry, i) => {
       const div = document.createElement('div');
       div.className = "flex gap-4 bg-zinc-800 rounded-2xl p-4 items-center";
-      div.innerHTML = `<input type="text" value="${entry.name}" id="lb-name-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3"><input type="number" value="${entry.referrals}" id="lb-ref-${i}" class="w-28 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3 text-center"><input type="text" value="${entry.website}" id="lb-site-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3"><input type="text" value="${entry.banner_url}" id="lb-banner-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3"><button onclick="removeLeaderboardEntry(${i})" class="px-4 py-3 text-rose-400 hover:bg-rose-400/10 rounded-xl"><i class="fa-solid fa-trash"></i></button>`;
+      div.innerHTML = `
+        <input type="text" value="${entry.name}" id="lb-name-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
+        <input type="number" value="${entry.referrals}" id="lb-ref-${i}" class="w-28 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3 text-center">
+        <input type="text" value="${entry.website}" id="lb-site-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
+        <input type="text" value="${entry.banner_url}" id="lb-banner-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
+        <button onclick="removeLeaderboardEntry(${i})" class="px-4 py-3 text-rose-400 hover:bg-rose-400/10 rounded-xl"><i class="fa-solid fa-trash"></i></button>
+      `;
       list.appendChild(div);
     });
   }
@@ -740,10 +756,29 @@
     document.getElementById('stat-shares').textContent = Object.values(config.analytics.shares).reduce((a,b)=>a+b,0);
     document.getElementById('stat-conversion').textContent = config.analytics.conversionRate + "%";
     renderActivityLog();
+
     if (charts.shares) charts.shares.destroy();
-    charts.shares = new Chart(document.getElementById('sharesChart'), { type: 'doughnut', data: { labels: ['X','Facebook','WhatsApp','LinkedIn','Email'], datasets: [{ data: Object.values(config.analytics.shares), backgroundColor: ['#000000','#1877F2','#25D366','#0A66C2','#EA4335'] }] }, options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } } });
+    charts.shares = new Chart(document.getElementById('sharesChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['X', 'Facebook', 'WhatsApp', 'LinkedIn', 'Email'],
+        datasets: [{ data: Object.values(config.analytics.shares), backgroundColor: ['#000000', '#1877F2', '#25D366', '#0A66C2', '#EA4335'] }]
+      },
+      options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+    });
+
     if (charts.growth) charts.growth.destroy();
-    charts.growth = new Chart(document.getElementById('growthChart'), { type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ label: 'Referrals', data: config.analytics.growthData, borderColor: '#a855f7', tension: 0.4 }] }, options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.1)' } } } } });
+    charts.growth = new Chart(document.getElementById('growthChart'), {
+      type: 'line',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{ label: 'Referrals', data: config.analytics.growthData, borderColor: '#a855f7', tension: 0.4 }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: { y: { grid: { color: 'rgba(255,255,255,0.1)' } } }
+      }
+    });
   }
 
   function renderActivityLog() {
@@ -751,7 +786,9 @@
     let html = config.analytics.activityLog.map(entry => `<div class="flex justify-between"><span class="text-zinc-500">${entry.time}</span><span class="text-white">${entry.action}</span></div>`).join('');
     if (config.analytics.submissions.length > 0) {
       html += `<div class="mt-4 pt-4 border-t border-white/10"><strong class="text-amber-400">Recent Banner Submissions:</strong>`;
-      config.analytics.submissions.slice(0,3).forEach(s => { html += `<div class="text-xs mt-2">${s.time} – ${s.name} (${s.email})</div>`; });
+      config.analytics.submissions.slice(0,3).forEach(s => {
+        html += `<div class="text-xs mt-2">${s.time} – ${s.name} (${s.email})</div>`;
+      });
       html += `</div>`;
     }
     logDiv.innerHTML = html || '<div class="text-zinc-500">No activity yet...</div>';
@@ -888,22 +925,45 @@
     document.getElementById('admin-new-password').value = '';
   }
 
-  function renderAdminLeaderboardList() { /* full function from previous */ }
+  async function init() {
+    loadConfig();
 
-  function addLeaderboardEntry() { /* full function from previous */ }
+    if (typeof emailjs !== 'undefined') {
+      emailjs.init("HHsTqMjJ-BBqu9BeN");
+      console.log('%c📧 EmailJS fully initialized', 'color:#10b981; font-weight:bold');
+    }
 
-  function removeLeaderboardEntry(index) { /* full function from previous */ }
+    await testSupabaseConnection();
+    await ensureAnalyticsRow();
+    await loadGlobalAnalytics();
+    await createMyRefCodeIfNeeded();
+    await loadLeaderboardFromSupabase();
 
-  async function saveAdminChanges() { /* full function from previous */ }
+    if (!customStorage.getItem('visitorCounted')) {
+      await incrementGlobalStat('visitors');
+      customStorage.setItem('visitorCounted', 'true');
+    }
 
-  function switchAdminTab(tab) { /* full function from previous */ }
+    const urlParams = new URLSearchParams(window.location.search);
+    const incomingRef = urlParams.get('ref');
+    if (incomingRef && incomingRef !== myRefCode) {
+      await incrementReferral(incomingRef);
+    }
 
-  function renderAnalytics() { /* full function from previous */ }
+    updateAllTexts();
+    generateReferralLink();
+    renderLeaderboard();
+    renderWinnerBanner();
+    updateWinnerButtonVisibility();
+    trackEvent("Page View", "Homepage loaded");
 
-  function renderActivityLog() { /* full function from previous */ }
+    startRealtime();
 
-  // All window. assignments
-  window.openAdminPanel = () => { const entered = prompt("🔒 Enter Admin Password:"); if (entered === ADMIN_PASSWORD) { document.getElementById('admin-modal').classList.remove('hidden'); loadAdminFormValues(); switchAdminTab(0); } else if (entered) alert("❌ Wrong password"); };
+    updateLiveStatsOnHomepage();
+    console.log('%c🚀 FULLY REALTIME ENABLED — Leaderboard + Winner Submissions are now live!', 'color:#10b981; font-weight:bold; font-size:16px');
+  }
+
+  window.openAdminPanel = openAdminPanel;
   window.closeAdminPanel = closeAdminPanel;
   window.switchAdminTab = switchAdminTab;
   window.saveAdminChanges = saveAdminChanges;
