@@ -89,26 +89,18 @@
   </style>
 </head>
 <body class="bg-gradient-to-br from-slate-950 to-zinc-900 text-white min-h-screen">
-  <!-- HEADER -->
+  <!-- HEADER (Admin button removed for public) -->
   <nav class="border-b border-white/10 bg-black/70 backdrop-blur-xl fixed w-full z-50">
     <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 bg-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">🔄</div>
         <h1 class="text-2xl font-bold tracking-tight">Refly</h1>
       </div>
-      <div class="flex items-center gap-3">
-        <button onclick="Refly.installPWA()" 
-                class="px-5 py-2 text-sm font-medium flex items-center gap-2 bg-white/10 hover:bg-white/20 rounded-3xl transition">
-          <i class="fas fa-download"></i>
-          <span>Save to Home</span>
-        </button>
-        <button onclick="Refly.showAdmin()" 
-                aria-label="Open admin panel"
-                class="px-6 py-2.5 bg-white/10 hover:bg-white/20 rounded-3xl text-sm font-medium flex items-center gap-2 transition focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <i class="fas fa-lock"></i>
-          <span>Admin</span>
-        </button>
-      </div>
+      <button onclick="Refly.installPWA()" 
+              class="px-5 py-2 text-sm font-medium flex items-center gap-2 bg-white/10 hover:bg-white/20 rounded-3xl transition">
+        <i class="fas fa-download"></i>
+        <span>Save to Home</span>
+      </button>
     </div>
   </nav>
 
@@ -314,11 +306,13 @@
   <script>
     /**
      * Refly v2.7 – Karanga Oliver's Professional Referral Flywheel
-     * Full non-abbreviated version with Plausible custom event tracking for every share button click
+     * Admin panel hidden from public (removed visible button). 
+     * Access admin with secret URL: https://viralrefer.app/?admin=nova2026
+     * Password changed to nova2026
      */
 
     const Refly = (function () {
-      const DEFAULT_PASSWORD = "grokflywheel";
+      const DEFAULT_PASSWORD = "nova2026";
       
       let currentTargetURL = localStorage.getItem("refly_target_url") || "https://example.com/your-opportunity";
       let currentBannerURL = localStorage.getItem("refly_banner_url") || "";
@@ -507,59 +501,14 @@
         });
       }
 
-      function shareToX() {
-        trackShare("X");
-        window.open(`https://twitter.com/intent/tweet?text=${shareText()}&url=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer');
-        shareSuccess();
-      }
-
-      function shareToLinkedIn() {
-        trackShare("LinkedIn");
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer');
-        shareSuccess();
-      }
-
-      function shareToFacebook() {
-        trackShare("Facebook");
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer');
-        shareSuccess();
-      }
-
-      function shareToWhatsApp() {
-        trackShare("WhatsApp");
-        window.open(`https://wa.me/?text=${shareText()}%0A${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer');
-        shareSuccess();
-      }
-
-      function shareToTelegram() {
-        trackShare("Telegram");
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink())}&text=${shareText()}`, '_blank', 'noopener,noreferrer');
-        shareSuccess();
-      }
-
-      function shareToEmail() {
-        trackShare("Email");
-        const body = `Hey,\n\nKaranga Oliver shared his Professional Referral Flywheel with me (ref: ${refCode}).\n\n${currentTargetURL}\n\nBest,\nKaranga Oliver`;
-        window.location.href = `mailto:?subject=Professional Opportunity via Karanga Oliver's Refly&body=${encodeURIComponent(body)}`;
-        shareSuccess();
-      }
-
-      function shareToSMS() {
-        trackShare("SMS");
-        window.location.href = `sms:?body=Karanga Oliver's Professional Referral Flywheel (ref: ${refCode}) — ${referralLink()}`;
-        shareSuccess();
-      }
-
-      function shareNative() {
-        trackShare("Native Share");
-        if (navigator.share) {
-          navigator.share({
-            title: "Karanga Oliver's Refly",
-            text: `Proven referral flywheel (ref: ${refCode})`,
-            url: referralLink()
-          }).then(() => shareSuccess());
-        }
-      }
+      function shareToX() { trackShare("X"); window.open(`https://twitter.com/intent/tweet?text=${shareText()}&url=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToLinkedIn() { trackShare("LinkedIn"); window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToFacebook() { trackShare("Facebook"); window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToWhatsApp() { trackShare("WhatsApp"); window.open(`https://wa.me/?text=${shareText()}%0A${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToTelegram() { trackShare("Telegram"); window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink())}&text=${shareText()}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToEmail() { trackShare("Email"); const body = `Hey,\n\nKaranga Oliver shared his Professional Referral Flywheel with me (ref: ${refCode}).\n\n${currentTargetURL}\n\nBest,\nKaranga Oliver`; window.location.href = `mailto:?subject=Professional Opportunity via Karanga Oliver's Refly&body=${encodeURIComponent(body)}`; shareSuccess(); }
+      function shareToSMS() { trackShare("SMS"); window.location.href = `sms:?body=Karanga Oliver's Professional Referral Flywheel (ref: ${refCode}) — ${referralLink()}`; shareSuccess(); }
+      function shareNative() { trackShare("Native Share"); if (navigator.share) navigator.share({ title: "Karanga Oliver's Refly", text: `Proven referral flywheel (ref: ${refCode})`, url: referralLink() }).then(() => shareSuccess()); }
 
       function showQR() {
         trackShare("QR Code");
@@ -789,6 +738,12 @@
           adminEstimatedReach: document.getElementById("admin-estimated-reach")
         };
 
+        // Secret admin access via URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("admin") === "nova2026") {
+          showAdmin();
+        }
+
         elements.bannerInput.addEventListener('input', updateBannerPreview);
 
         simulateNetworkGrowth();
@@ -798,7 +753,7 @@
         buildShareButtons();
         document.addEventListener('keydown', handleKeydown);
 
-        console.log("%c✅ Karanga Oliver's Refly v2.7 loaded – Share Button Clicked events now tracked in Plausible", "color:#3b82f6; font-weight:bold");
+        console.log("%c✅ Karanga Oliver's Refly v2.7 loaded – Admin panel hidden (use ?admin=nova2026)", "color:#3b82f6; font-weight:bold");
       }
 
       return {
