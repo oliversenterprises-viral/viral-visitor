@@ -1,367 +1,723 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Earn $25 to $500 per lead + up to $1 per referral. Get your FREE website today!">
-    <title>$25–$500 Per Lead! - Pick and Profit</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
-        .hero-bg { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); }
-        .accent-green { color: #10b981; }
-        .live-counter { animation: pulse 2s infinite; }
-        #confetti-canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Karanga Oliver's Professional Referral Flywheel – One powerful page. Any URL. Endless momentum.">
+  <meta name="author" content="Karanga Oliver">
+  
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:title" content="Karanga Oliver's Professional Referral Flywheel">
+  <meta property="og:description" content="One powerful page. Any URL. Endless momentum. Join the flywheel.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://viralrefer.app">
+  <meta property="og:image" content="https://viralrefer.app/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Karanga Oliver's Professional Referral Flywheel">
+  <meta name="twitter:description" content="One powerful page. Any URL. Endless momentum.">
+
+  <!-- Plausible Analytics – NOW CONFIGURED FOR YOUR DOMAIN -->
+  <script defer data-domain="viralrefer.app" src="https://plausible.io/js/script.js"></script>
+
+  <title>Refly • Karanga Oliver's Professional Referral Flywheel</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --flywheel-size: 320px;
+    }
+    @media (min-width: 640px) { :root { --flywheel-size: 360px; } }
+    @media (min-width: 1024px) { :root { --flywheel-size: 384px; } }
+    
+    body { 
+      font-family: 'Inter', system_ui, sans-serif; 
+    }
+   
+    .flywheel-container {
+      animation: spin 40s linear infinite;
+      width: var(--flywheel-size);
+      height: var(--flywheel-size);
+    }
+    .flywheel-container:hover { animation-play-state: paused; }
+    .flywheel-container.fast-spin {
+      animation: spin 4s linear 3 !important;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .toast { 
+      animation: toastIn 0.3s ease forwards; 
+    }
+    @keyframes toastIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal {
+      animation: modalFade 0.2s ease forwards;
+    }
+    @keyframes modalFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .copy-btn.success {
+      transform: scale(1.08) !important;
+      transition: all 0.2s ease;
+    }
+    
+    canvas#confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .live-ticker {
+      animation: tickerPulse 2s infinite ease-in-out;
+    }
+  </style>
 </head>
-<body class="bg-black text-white font-sans">
+<body class="bg-gradient-to-br from-slate-950 to-zinc-900 text-white min-h-screen">
+  <!-- HEADER -->
+  <nav class="border-b border-white/10 bg-black/70 backdrop-blur-xl fixed w-full z-50">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">🔄</div>
+        <h1 class="text-2xl font-bold tracking-tight">Refly</h1>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="Refly.installPWA()" 
+                class="px-5 py-2 text-sm font-medium flex items-center gap-2 bg-white/10 hover:bg-white/20 rounded-3xl transition">
+          <i class="fas fa-download"></i>
+          <span>Save to Home</span>
+        </button>
+        <button onclick="Refly.showAdmin()" 
+                aria-label="Open admin panel"
+                class="px-6 py-2.5 bg-white/10 hover:bg-white/20 rounded-3xl text-sm font-medium flex items-center gap-2 transition focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <i class="fas fa-lock"></i>
+          <span>Admin</span>
+        </button>
+      </div>
+    </div>
+  </nav>
 
-    <!-- NAVBAR -->
-    <nav class="bg-black border-b border-white/10 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-emerald-500 rounded-2xl flex items-center justify-center text-2xl">💎</div>
-                <h1 class="text-2xl font-bold tracking-tight">Pick and Profit</h1>
-            </div>
-            <div class="hidden md:flex items-center gap-8 text-sm font-medium">
-                <a href="#how" class="hover:text-emerald-400 transition">How It Works</a>
-                <a href="#leaderboard" class="hover:text-emerald-400 transition">Top Earners</a>
-                <a href="#testimonials" class="hover:text-emerald-400 transition">Proof</a>
-                <a href="#faq" class="hover:text-emerald-400 transition">FAQ</a>
-            </div>
-            <a href="https://pickandprofit.com/join/?ref=oliversenterprises" target="_blank"
-               class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-black font-semibold rounded-2xl transition flex items-center gap-2">
-                <i class="fas fa-rocket"></i>
-                Claim Free Website
-            </a>
-        </div>
-    </nav>
+  <!-- BANNER SLOTS -->
+  <div id="banner-slot-top" class="max-w-7xl mx-auto px-6 pt-28 hidden"></div>
 
-    <!-- LIVE TICKER -->
-    <div class="bg-emerald-600 text-black py-3 text-center text-sm font-medium flex items-center justify-center gap-8 overflow-hidden">
-        <div class="flex items-center gap-2 whitespace-nowrap">
-            <span class="animate-pulse">👀</span> 
-            <span id="online-count">1,284</span> people viewing this page right now
-        </div>
-        <div class="h-4 w-px bg-black/30"></div>
-        <div id="recent-joins" class="flex items-center gap-6 text-xs overflow-hidden whitespace-nowrap"></div>
+  <div class="max-w-7xl mx-auto px-6 pt-24 pb-16">
+    <div id="banner-slot-hero" class="hidden mb-12"></div>
+    
+    <!-- HERO TEXT -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <h1 class="text-6xl font-bold tracking-tighter leading-none mb-6">
+        Karanga Oliver's Professional<br>Referral Flywheel
+      </h1>
+      <p class="text-xl text-zinc-400 mb-8">One powerful page. Any URL. Endless momentum.</p>
+      
+      <div id="target-display" 
+           class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md px-8 py-4 rounded-3xl text-lg font-medium border border-white/20">
+        <i class="fas fa-link text-blue-400"></i>
+        <span id="current-url" class="text-blue-300 break-all"></span>
+      </div>
     </div>
 
-    <!-- HERO -->
-    <section class="hero-bg py-20 md:py-24 relative">
-        <div class="max-w-5xl mx-auto px-6 text-center">
-            <div class="inline-flex items-center gap-2 bg-white/10 text-white text-sm font-medium px-6 py-2.5 rounded-3xl mb-6">
-                🔥 LIVE: $25 – $500 PER LEAD
-            </div>
-            
-            <h1 class="text-5xl md:text-7xl font-bold leading-none tracking-tighter mb-4">
-                $25 to <span class="accent-green">$500</span> Per Lead!
-            </h1>
-            <p class="text-2xl text-gray-300 max-w-2xl mx-auto mb-6">
-                Join <strong>Pick and Profit</strong> and we pay YOU up to <strong>$1 per referral</strong> + <strong>$25–$500 per lead</strong> you collect.
-            </p>
-
-            <!-- COUNTDOWN -->
-            <div class="inline-flex items-center gap-3 bg-white/10 px-8 py-4 rounded-3xl mb-8 text-lg font-semibold">
-                Special Bonus Ends In:
-                <span id="countdown" class="font-mono text-emerald-400 text-3xl font-bold"></span>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
-                <a href="https://pickandprofit.com/join/?ref=oliversenterprises" target="_blank"
-                   class="px-10 py-5 bg-emerald-500 hover:bg-emerald-600 text-black font-bold text-2xl rounded-3xl transition flex items-center gap-3 shadow-2xl shadow-emerald-500/50">
-                    <i class="fas fa-gift"></i>
-                    GET YOUR FREE WEBSITE NOW
-                </a>
-                
-                <button onclick="copyLink()" 
-                        class="px-8 py-5 border border-white/30 hover:border-white/60 rounded-3xl flex items-center gap-3 transition text-lg font-medium">
-                    <i class="fas fa-copy"></i>
-                    Copy My Referral Link
-                </button>
-            </div>
-
-            <div class="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-3xl px-8 py-4 text-sm">
-                <span class="live-counter text-emerald-400">📈</span>
-                <span id="live-leads" class="font-mono text-2xl font-bold text-emerald-400">2,341</span>
-                <p class="text-gray-400">leads collected today • <span class="text-emerald-400">$94,872 paid out</span></p>
-            </div>
+    <!-- FLYWHEEL -->
+    <div class="relative flex justify-center mb-20">
+      <div class="relative" style="width: var(--flywheel-size); height: var(--flywheel-size);">
+        <div id="flywheel" class="absolute inset-0 flywheel-container mx-auto cursor-pointer" onclick="Refly.manualSpin()">
+          <div class="absolute inset-0 border-8 border-blue-500/30 rounded-full"></div>
+          <div class="absolute top-4 sm:top-8 left-1/2 -translate-x-1/2 bg-zinc-900 border border-white/10 rounded-2xl px-5 py-3 text-center text-sm font-medium w-44 sm:w-52 shadow-xl">1. Attract</div>
+          <div class="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 bg-zinc-900 border border-white/10 rounded-2xl px-5 py-3 text-center text-sm font-medium w-44 sm:w-52 shadow-xl">3. Refer</div>
+          <div class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 bg-zinc-900 border border-white/10 rounded-2xl px-5 py-3 text-center text-sm font-medium w-44 sm:w-52 shadow-xl">2. Delight</div>
+          <div class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 bg-zinc-900 border border-white/10 rounded-2xl px-5 py-3 text-center text-sm font-medium w-44 sm:w-52 shadow-xl">4. Grow</div>
         </div>
-        <canvas id="confetti-canvas"></canvas>
-    </section>
-
-    <!-- BENEFITS -->
-    <section class="py-20 bg-white/5">
-        <div class="max-w-6xl mx-auto px-6">
-            <h2 class="text-center text-4xl font-semibold mb-12">What You Get Instantly</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-emerald-500/50 transition">
-                    <div class="text-5xl mb-6">🌐</div>
-                    <h3 class="text-2xl font-bold mb-3">Your Own Lead-Capture Website</h3>
-                    <p class="text-gray-400">Professional, ready-to-go site that collects emails & leads on autopilot.</p>
-                </div>
-                <div class="bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-emerald-500/50 transition">
-                    <div class="text-5xl mb-6">📧</div>
-                    <h3 class="text-2xl font-bold mb-3">High-Converting Capture Pages</h3>
-                    <p class="text-gray-400">Multiple proven templates that turn visitors into paid leads.</p>
-                </div>
-                <div class="bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-emerald-500/50 transition">
-                    <div class="text-5xl mb-6">📨</div>
-                    <h3 class="text-2xl font-bold mb-3">Built-in Autoresponder</h3>
-                    <p class="text-gray-400">Follow-up emails sent automatically so you never miss a sale.</p>
-                </div>
+        
+        <div class="absolute inset-0 flex items-center justify-center z-10" onclick="Refly.manualSpin()">
+          <div id="flywheel-hub" class="w-36 h-36 sm:w-40 sm:h-40 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/50 cursor-pointer">
+            <div class="text-center">
+              <div class="text-5xl mb-1">🔄</div>
+              <div class="text-xs font-bold tracking-[2px] uppercase">FLYWHEEL</div>
             </div>
+          </div>
         </div>
-    </section>
-
-    <!-- HOW IT WORKS -->
-    <section id="how" class="py-20">
-        <div class="max-w-5xl mx-auto px-6">
-            <h2 class="text-4xl font-semibold text-center mb-12">3 Simple Steps to Start Earning</h2>
-            <div class="grid md:grid-cols-3 gap-10">
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto bg-emerald-500 text-black rounded-2xl flex items-center justify-center text-3xl font-bold mb-6">1</div>
-                    <h3 class="text-xl font-semibold mb-2">Claim Your Free Site</h3>
-                    <p class="text-gray-400">Takes 60 seconds. No credit card needed.</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto bg-emerald-500 text-black rounded-2xl flex items-center justify-center text-3xl font-bold mb-6">2</div>
-                    <h3 class="text-xl font-semibold mb-2">Share Your Link</h3>
-                    <p class="text-gray-400">Post on social media, email, or run cheap ads.</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto bg-emerald-500 text-black rounded-2xl flex items-center justify-center text-3xl font-bold mb-6">3</div>
-                    <h3 class="text-xl font-semibold mb-2">Get Paid</h3>
-                    <p class="text-gray-400">$25–$500 every time someone submits a lead.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- TESTIMONIALS -->
-    <section id="testimonials" class="py-20 bg-white/5">
-        <div class="max-w-6xl mx-auto px-6">
-            <h2 class="text-4xl font-semibold text-center mb-12">Real People, Real Earnings</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-black p-8 rounded-3xl border border-white/10">
-                    <p class="italic mb-6">"Made $1,240 in my first 7 days just sharing the capture page on Facebook!"</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gray-600 rounded-2xl"></div>
-                        <div>
-                            <p class="font-semibold">Sarah M.</p>
-                            <p class="text-xs text-gray-400">California • $4,870 total earned</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-black p-8 rounded-3xl border border-white/10">
-                    <p class="italic mb-6">"The autoresponder does all the work. I’m earning while I sleep. Best side hustle ever."</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gray-600 rounded-2xl"></div>
-                        <div>
-                            <p class="font-semibold">Michael Torres</p>
-                            <p class="text-xs text-gray-400">Texas • $9,200 total earned</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-black p-8 rounded-3xl border border-white/10">
-                    <p class="italic mb-6">"Just hit $500 on a single lead yesterday. This system actually works."</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gray-600 rounded-2xl"></div>
-                        <div>
-                            <p class="font-semibold">James K.</p>
-                            <p class="text-xs text-gray-400">New York • $2,850 this month</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- LEADERBOARD -->
-    <section id="leaderboard" class="py-20 bg-white/5">
-        <div class="max-w-5xl mx-auto px-6">
-            <h2 class="text-4xl font-semibold text-center mb-10">Top Earners This Week 🔥</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="bg-black/70 p-6 rounded-3xl flex justify-between items-center border border-emerald-500/30">
-                    <div>🥇 <strong>oliversenterprises</strong></div>
-                    <div class="text-emerald-400 font-bold">$8,450</div>
-                </div>
-                <div class="bg-black/70 p-6 rounded-3xl flex justify-between items-center">
-                    <div>🥈 Sarah M.</div>
-                    <div class="text-emerald-400 font-bold">$7,120</div>
-                </div>
-                <div class="bg-black/70 p-6 rounded-3xl flex justify-between items-center">
-                    <div>🥉 Michael T.</div>
-                    <div class="text-emerald-400 font-bold">$6,890</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq" class="py-20 max-w-3xl mx-auto px-6">
-        <h2 class="text-4xl font-semibold text-center mb-12">Frequently Asked Questions</h2>
-        <div class="space-y-4">
-            <details class="bg-white/5 p-6 rounded-3xl">
-                <summary class="font-semibold cursor-pointer">Is the website really free?</summary>
-                <p class="text-gray-400 mt-3">Yes — 100% free. You only pay standard web hosting (as low as $0.17/day).</p>
-            </details>
-            <details class="bg-white/5 p-6 rounded-3xl">
-                <summary class="font-semibold cursor-pointer">How fast can I start earning?</summary>
-                <p class="text-gray-400 mt-3">Most members start collecting leads and payments within 24–48 hours.</p>
-            </details>
-            <details class="bg-white/5 p-6 rounded-3xl">
-                <summary class="font-semibold cursor-pointer">Do I need any experience?</summary>
-                <p class="text-gray-400 mt-3">No experience needed. The system is completely done-for-you.</p>
-            </details>
-        </div>
-    </section>
-
-    <!-- FINAL CTA -->
-    <section class="py-20 bg-gradient-to-b from-transparent to-emerald-500/10 text-center">
-        <div class="max-w-2xl mx-auto px-6">
-            <h2 class="text-5xl font-bold mb-6">Ready to Start Collecting $25–$500 Leads?</h2>
-            <p class="text-2xl mb-10 text-gray-300">Claim your free Pick and Profit website right now with my link:</p>
-            <a href="https://pickandprofit.com/join/?ref=oliversenterprises" target="_blank"
-               class="inline-flex items-center gap-4 bg-white text-black font-bold text-3xl px-14 py-6 rounded-3xl hover:scale-105 transition">
-                GET STARTED FREE →
-            </a>
-            <p class="mt-8 text-sm text-gray-400">Your personal ref link will be automatically tracked</p>
-        </div>
-    </section>
-
-    <!-- STICKY VIRAL SHARE BAR -->
-    <div class="bg-emerald-600 text-black py-4 sticky bottom-0 z-50 shadow-2xl flex items-center justify-center gap-x-6 gap-y-3 flex-wrap px-6">
-        <span class="font-semibold text-sm">Share this page & earn more referrals →</span>
-        <button onclick="shareTo('twitter')" class="flex items-center gap-2 hover:scale-110 transition font-medium">
-            <i class="fab fa-x-twitter"></i> X
-        </button>
-        <button onclick="shareTo('facebook')" class="flex items-center gap-2 hover:scale-110 transition font-medium">
-            <i class="fab fa-facebook"></i> Facebook
-        </button>
-        <button onclick="shareTo('linkedin')" class="flex items-center gap-2 hover:scale-110 transition font-medium">
-            <i class="fab fa-linkedin"></i> LinkedIn
-        </button>
-        <button onclick="shareTo('whatsapp')" class="flex items-center gap-2 hover:scale-110 transition font-medium">
-            <i class="fab fa-whatsapp"></i> WhatsApp
-        </button>
-        <button onclick="copyLink()" class="flex items-center gap-2 bg-black text-white px-6 py-2 rounded-3xl hover:scale-110 transition">
-            <i class="fas fa-copy"></i> Copy Link
-        </button>
+      </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="bg-black border-t border-white/10 py-12 text-center text-xs text-gray-500">
-        <p>© 2026 Pick and Profit • Not affiliated with any other brand</p>
-        <p class="mt-2">Created for <strong>Karanga Oliver (oliversenterprises)</strong></p>
-    </footer>
+    <div id="banner-slot-mid" class="hidden mb-16"></div>
 
-    <script>
-        // Tailwind
-        tailwind.config = { content: ["./**/*.{html,js}"] };
+    <!-- SHARE SECTION -->
+    <div class="bg-white/5 border border-white/10 rounded-3xl p-8 sm:p-10 max-w-3xl mx-auto">
+      <div id="banner-slot-before-share" class="hidden mb-8"></div>
+      
+      <h2 class="text-3xl font-semibold text-center mb-2">Share this momentum with your network</h2>
+      <p class="text-zinc-400 text-center mb-4">Give the professionals you know the same advantage you just received</p>
+      
+      <p class="text-center mb-6 text-emerald-300 text-sm font-medium flex items-center justify-center gap-2">
+        <i class="fas fa-arrow-rotate-right"></i>
+        You received it. Now help it reach the right people.
+      </p>
 
-        // Live leads counter
-        let leads = 2341;
-        setInterval(() => {
-            leads += Math.floor(Math.random() * 12) + 5;
-            document.getElementById('live-leads').textContent = leads.toLocaleString();
-        }, 2200);
+      <div class="mb-8">
+        <p id="social-proof" class="text-center text-xs text-zinc-400 flex items-center justify-center gap-2">
+          <i class="fas fa-users"></i>
+          This flywheel has been shared 
+          <span id="share-count" class="font-semibold text-emerald-300">4,128</span> 
+          times • reaching an estimated 
+          <span id="estimated-reach" class="font-semibold text-emerald-300">49,536</span> 
+          professionals
+        </p>
+        <p id="live-ticker" class="live-ticker text-center text-[10px] text-emerald-400/80 font-medium flex items-center justify-center gap-1.5 mt-3">
+          <span class="inline-block w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+          Just now: <span id="live-activity">3 professionals in your extended network spun the wheel</span>
+        </p>
+      </div>
+      
+      <div id="share-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12"></div>
+      
+      <button onclick="Refly.visitTarget()" 
+              class="w-full py-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-xl font-semibold rounded-3xl hover:brightness-110 transition flex items-center justify-center gap-3 focus:outline-none focus:ring-4 focus:ring-blue-400/30">
+        <span>Go to the Opportunity →</span>
+        <i class="fas fa-arrow-right"></i>
+      </button>
+      
+      <p id="referred-by-line" class="text-xs text-zinc-500 text-center mt-6">
+        Referred by Karanga Oliver • Professional network growth engine
+      </p>
+    </div>
 
-        // Users online counter
-        let online = 1284;
-        setInterval(() => {
-            online += Math.floor(Math.random() * 7) + 1;
-            document.getElementById('online-count').textContent = online.toLocaleString();
-        }, 4500);
+    <div id="banner-slot-bottom" class="hidden mt-16"></div>
+  </div>
 
-        // Recent joins ticker
-        const names = ["John from TX just joined", "Maria in CA claimed her site", "David earned $425", "Emma from FL signed up", "Carlos just got paid", "Lisa in NY claimed bonus"];
-        let tickerIndex = 0;
-        setInterval(() => {
-            const ticker = document.getElementById('recent-joins');
-            ticker.innerHTML = `<span class="text-emerald-400">🚀</span> ${names[tickerIndex % names.length]}`;
-            tickerIndex++;
-        }, 2800);
+  <!-- ADMIN MODAL -->
+  <div id="admin-modal" onclick="if(event.target.id === 'admin-modal') Refly.hideAdmin()" 
+       class="hidden fixed inset-0 bg-black/80 backdrop-blur-lg z-[100] items-center justify-center modal"
+       role="dialog" aria-modal="true" aria-labelledby="admin-title">
+    <div onclick="event.stopImmediatePropagation()" 
+         class="bg-zinc-900 rounded-3xl w-full max-w-md mx-4 p-8 max-h-[90vh] overflow-auto">
+      <h3 id="admin-title" class="text-2xl font-bold mb-6 flex items-center gap-3">
+        <i class="fas fa-shield-alt"></i> Owner Admin
+      </h3>
+      
+      <div class="space-y-6">
+        <div>
+          <label class="block text-sm text-zinc-400 mb-2">Password</label>
+          <input id="password-input" type="password" class="w-full bg-black border border-white/20 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500" placeholder="Enter password">
+        </div>
+        
+        <div>
+          <label class="block text-sm text-zinc-400 mb-2">Target URL (main opportunity)</label>
+          <input id="url-input" type="url" class="w-full bg-black border border-white/20 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500" placeholder="https://your-link.com">
+        </div>
+        <div>
+          <label class="block text-sm text-zinc-400 mb-2">Banner Image URL</label>
+          <input id="banner-input" type="url" class="w-full bg-black border border-white/20 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500" placeholder="https://i.imgur.com/your-banner.jpg">
+        </div>
+        <div>
+          <label class="block text-sm text-zinc-400 mb-2">Banner Click URL <span class="text-emerald-400">(hidden)</span></label>
+          <input id="banner-link-input" type="url" class="w-full bg-black border border-white/20 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500" placeholder="https://secret-destination.com">
+        </div>
+        <div>
+          <label class="block text-sm text-zinc-400 mb-2">Sponsor Name</label>
+          <input id="sponsor-name-input" type="text" class="w-full bg-black border border-white/20 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500" placeholder="Acme Corp">
+        </div>
+        <div>
+          <label class="block text-sm text-zinc-400 mb-2">Badge Text</label>
+          <input id="badge-text-input" type="text" class="w-full bg-black border border-white/20 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500" value="FEATURED PARTNER">
+        </div>
+        <div>
+          <label class="block text-sm text-zinc-400 mb-2">Banner Position</label>
+          <select id="position-input" class="w-full bg-black border border-white/20 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500">
+            <option value="top">Top Hero</option>
+            <option value="hero">Hero Section</option>
+            <option value="mid">After Flywheel</option>
+            <option value="before-share">Before Share Buttons</option>
+            <option value="bottom">Bottom of Page</option>
+            <option value="none">Hide Banner</option>
+          </select>
+        </div>
 
-        // 48-hour countdown
-        function startCountdown() {
-            let time = 48 * 60 * 60;
-            const timer = document.getElementById('countdown');
-            setInterval(() => {
-                if (time <= 0) return;
-                time--;
-                const hours = Math.floor(time / 3600);
-                const minutes = Math.floor((time % 3600) / 60);
-                const seconds = time % 60;
-                timer.textContent = `${hours}h ${minutes}m ${seconds}s`;
-            }, 1000);
+        <div class="border border-white/10 rounded-2xl p-5 bg-black/30">
+          <h4 class="text-sm font-semibold text-emerald-300 mb-4 flex items-center gap-2">
+            <i class="fas fa-globe"></i> Global Network Momentum
+          </h4>
+          <div class="grid grid-cols-2 gap-4 text-xs">
+            <div>
+              <p class="text-zinc-400">Your unique Ref Code</p>
+              <p id="admin-ref-code" class="font-mono bg-black px-3 py-2 rounded-xl text-emerald-300"></p>
+            </div>
+            <div>
+              <p class="text-zinc-400">Your shares</p>
+              <p id="admin-share-count" class="font-semibold text-2xl text-emerald-300"></p>
+            </div>
+            <div class="col-span-2">
+              <p class="text-zinc-400">Estimated global reach</p>
+              <p id="admin-estimated-reach" class="font-semibold text-3xl text-emerald-300"></p>
+            </div>
+          </div>
+          <div class="flex gap-3 mt-6">
+            <button onclick="Refly.regenerateRefCode()" class="flex-1 py-3 text-xs font-medium border border-white/20 hover:border-white/40 rounded-2xl">New Ref Code</button>
+            <button onclick="Refly.resetShareCount()" class="flex-1 py-3 text-xs font-medium border border-white/20 hover:border-white/40 rounded-2xl">Reset All</button>
+            <button onclick="Refly.exportShareLog()" class="flex-1 py-3 text-xs font-medium border border-white/20 hover:border-white/40 rounded-2xl">Export CSV</button>
+          </div>
+        </div>
+        
+        <div class="border border-white/10 rounded-2xl p-4 bg-black/30">
+          <p class="text-xs text-zinc-400 mb-3">Banner Preview</p>
+          <div id="banner-preview" class="min-h-[120px] rounded-2xl flex items-center justify-center text-zinc-400 border border-dashed border-white/30"></div>
+        </div>
+        
+        <button onclick="Refly.saveConfig()" 
+                class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-3xl font-semibold text-lg transition focus:outline-none focus:ring-4 focus:ring-blue-400/30">
+          Save &amp; Update Flywheel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR MODAL -->
+  <div id="qr-modal" onclick="if(event.target.id === 'qr-modal') Refly.hideQR()" 
+       class="hidden fixed inset-0 bg-black/80 backdrop-blur-lg z-[100] items-center justify-center modal"
+       role="dialog" aria-modal="true" aria-labelledby="qr-title">
+    <div onclick="event.stopImmediatePropagation()" 
+         class="bg-zinc-900 rounded-3xl w-full max-w-md mx-4 p-8 text-center">
+      <h3 id="qr-title" class="text-2xl font-bold mb-6">Share via QR Code</h3>
+      <div class="flex justify-center mb-6">
+        <img id="qr-image" src="" alt="QR Code for Karanga Oliver's Refly Referral Flywheel" class="rounded-2xl shadow-2xl">
+      </div>
+      <div class="flex gap-4 justify-center">
+        <button onclick="Refly.downloadQR()" class="flex-1 py-4 bg-white text-black rounded-3xl font-semibold flex items-center justify-center gap-2">Download QR</button>
+        <button onclick="Refly.hideQR()" class="flex-1 py-4 bg-white/10 hover:bg-white/20 rounded-3xl font-semibold">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="hidden fixed bottom-6 right-6 bg-green-600 text-white px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toast-text" class="font-medium"></span>
+  </div>
+
+  <!-- Confetti canvas -->
+  <canvas id="confetti" class="hidden"></canvas>
+
+  <script>
+    /**
+     * Refly v2.5 – Karanga Oliver's Professional Referral Flywheel
+     * Updated for https://viralrefer.app with live Plausible analytics
+     */
+
+    const Refly = (function () {
+      const DEFAULT_PASSWORD = "grokflywheel";
+      
+      let currentTargetURL = localStorage.getItem("refly_target_url") || "https://example.com/your-opportunity";
+      let currentBannerURL = localStorage.getItem("refly_banner_url") || "";
+      let currentBannerLinkURL = localStorage.getItem("refly_banner_link") || "";
+      let currentSponsorName = localStorage.getItem("refly_sponsor_name") || "";
+      let currentBadgeText = localStorage.getItem("refly_badge_text") || "FEATURED PARTNER";
+      let currentBannerPosition = localStorage.getItem("refly_banner_position") || "top";
+
+      let refCode = localStorage.getItem("refly_ref_code") || `ko-${Math.random().toString(36).slice(2, 10)}`;
+      localStorage.setItem("refly_ref_code", refCode);
+
+      let shareCount = parseInt(localStorage.getItem("refly_share_count") || "4128", 10);
+      let shareLog = JSON.parse(localStorage.getItem("refly_share_log") || "[]");
+
+      let elements = {};
+      let confettiCanvas, confettiCtx;
+
+      function sanitize(str) {
+        return String(str).replace(/[<>]/g, '');
+      }
+
+      const bannerHTML = (imageUrl) => `
+        <div onclick="Refly.handleBannerClick()" class="cursor-pointer block relative hover:scale-[1.02] hover:shadow-2xl hover:ring-4 hover:ring-amber-400/30 transition-all rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-zinc-950">
+          <div class="bg-gradient-to-r from-zinc-900 to-black border-b border-white/10 px-6 py-3 flex items-center justify-between text-sm">
+            <span class="font-semibold">${sanitize(currentSponsorName) || 'Premium Partner'}</span>
+            <div class="flex items-center gap-1.5 bg-amber-400/10 text-amber-400 text-xs font-medium px-4 py-1 rounded-3xl">
+              <i class="fas fa-crown"></i> ${sanitize(currentBadgeText)}
+            </div>
+          </div>
+          <img src="${imageUrl}" alt="Featured Partner Banner" class="w-full h-auto max-h-[560px] object-contain" loading="lazy">
+          <div class="absolute bottom-3 left-3 text-[10px] bg-black/70 text-white/70 px-3 py-1 rounded-3xl flex items-center gap-1">
+            <i class="fas fa-star text-amber-400"></i> EXCLUSIVE SPOTLIGHT
+          </div>
+        </div>`;
+
+      function updateDisplay() {
+        elements.currentUrl.textContent = currentTargetURL;
+        elements.referredByLine.textContent = `Referred by Karanga Oliver (ref: ${refCode}) • Professional network growth engine`;
+        placeBanner();
+        updateShareCountDisplay();
+      }
+
+      function placeBanner() {
+        const slots = { top: elements.bannerTop, hero: elements.bannerHero, mid: elements.bannerMid, "before-share": elements.bannerBeforeShare, bottom: elements.bannerBottom };
+        Object.values(slots).forEach(s => { s.classList.add("hidden"); s.innerHTML = ""; });
+        if (!currentBannerURL || currentBannerPosition === "none") return;
+        const slot = slots[currentBannerPosition];
+        if (slot) { slot.innerHTML = bannerHTML(currentBannerURL); slot.classList.remove("hidden"); }
+      }
+
+      function handleBannerClick() {
+        if (currentBannerLinkURL && currentBannerLinkURL.startsWith("http")) window.open(currentBannerLinkURL, '_blank', 'noopener,noreferrer');
+      }
+
+      function launchConfetti() {
+        if (!confettiCanvas) {
+          confettiCanvas = document.getElementById("confetti");
+          confettiCtx = confettiCanvas.getContext("2d");
+          confettiCanvas.width = window.innerWidth;
+          confettiCanvas.height = window.innerHeight;
+        }
+        confettiCanvas.classList.remove("hidden");
+
+        const colors = ['#3b82f6', '#22d3ee', '#a3e635', '#eab308'];
+        let particles = [];
+
+        class Particle {
+          constructor() {
+            this.x = Math.random() * confettiCanvas.width;
+            this.y = Math.random() * confettiCanvas.height - confettiCanvas.height;
+            this.size = Math.random() * 12 + 6;
+            this.speedX = Math.random() * 3 - 1.5;
+            this.speedY = Math.random() * 5 + 3;
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.rotation = Math.random() * 360;
+            this.rotationSpeed = Math.random() * 10 - 5;
+          }
+          update() {
+            this.y += this.speedY;
+            this.x += this.speedX;
+            this.rotation += this.rotationSpeed;
+            this.speedY += 0.08;
+          }
+          draw() {
+            confettiCtx.save();
+            confettiCtx.translate(this.x, this.y);
+            confettiCtx.rotate(this.rotation * Math.PI / 180);
+            confettiCtx.fillStyle = this.color;
+            confettiCtx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+            confettiCtx.restore();
+          }
         }
 
-        // Confetti
-        function launchConfetti() {
-            const canvas = document.getElementById('confetti-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            let particles = [];
-            for (let i = 0; i < 300; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height - canvas.height,
-                    r: Math.random() * 8 + 4,
-                    d: Math.random() * 5 + 1,
-                    color: ['#10b981', '#fff', '#eab308'][Math.floor(Math.random()*3)],
-                    tilt: Math.random() * 10 - 5,
-                    tiltAngle: 0
-                });
-            }
-            let animation = setInterval(() => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particles.forEach((p, i) => {
-                    p.y += p.d;
-                    p.tiltAngle += 0.1;
-                    p.tilt = Math.sin(p.tiltAngle) * 15;
-                    ctx.beginPath();
-                    ctx.lineWidth = p.r;
-                    ctx.strokeStyle = p.color;
-                    ctx.moveTo(p.x + p.tilt, p.y);
-                    ctx.lineTo(p.x + p.tilt + p.r, p.y + p.r);
-                    ctx.stroke();
-                    if (p.y > canvas.height) particles.splice(i, 1);
-                });
-                if (particles.length === 0) clearInterval(animation);
-            }, 20);
-            setTimeout(() => { canvas.width = 0; }, 4000);
-        }
+        for (let i = 0; i < 180; i++) particles.push(new Particle());
 
-        // Copy link
-        function copyLink() {
-            const link = "https://pickandprofit.com/join/?ref=oliversenterprises";
-            navigator.clipboard.writeText(link).then(() => {
-                launchConfetti();
-                alert("✅ Link copied to clipboard!\n\nShare it everywhere to maximize your earnings.");
-            });
+        let frame;
+        function animate() {
+          confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+          let alive = false;
+          particles.forEach(p => {
+            p.update();
+            p.draw();
+            if (p.y < confettiCanvas.height) alive = true;
+          });
+          if (alive) frame = requestAnimationFrame(animate);
+          else {
+            confettiCanvas.classList.add("hidden");
+            cancelAnimationFrame(frame);
+          }
         }
+        animate();
+      }
 
-        // Share functions
-        function shareTo(platform) {
-            const url = "https://pickandprofit.com/join/?ref=oliversenterprises";
-            const text = "I just claimed my FREE Pick and Profit website — $25 to $500 per lead! 🔥";
-            launchConfetti();
-            let shareUrl = '';
-            if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-            else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-            else if (platform === 'linkedin') shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-            else if (platform === 'whatsapp') shareUrl = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
-            if (shareUrl) window.open(shareUrl, '_blank');
+      function showToast(message) {
+        const toast = elements.toast;
+        elements.toastText.textContent = message;
+        toast.classList.remove("hidden");
+        setTimeout(() => toast.classList.add("hidden"), 3800);
+      }
+
+      function boostFlywheel() {
+        const fly = elements.flywheel;
+        if (!fly) return;
+        fly.classList.add('fast-spin');
+        setTimeout(() => fly.classList.remove('fast-spin'), 13000);
+      }
+
+      function manualSpin() {
+        boostFlywheel();
+        showToast("Flywheel manually spun – momentum building!");
+      }
+
+      function shareSuccess() {
+        incrementShareCount();
+        boostFlywheel();
+        launchConfetti();
+        showToast("Thank you – your share just added real momentum to the flywheel 🔥");
+      }
+
+      const referralLink = () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set("ref", refCode);
+        return url.toString();
+      };
+
+      const shareText = () => encodeURIComponent(
+        `Karanga Oliver shared his Professional Referral Flywheel with me — a proven system for generating real opportunities (ref: ${refCode}). Thought this would be valuable for you too.`
+      );
+
+      function copyReferralLink() {
+        navigator.clipboard.writeText(referralLink()).then(() => {
+          const copyBtn = Array.from(document.querySelectorAll('#share-grid button')).find(b => b.innerHTML.includes('fa-copy'));
+          if (copyBtn) {
+            const orig = copyBtn.innerHTML;
+            copyBtn.classList.add('success');
+            copyBtn.innerHTML = `<i class="fas fa-check-circle text-3xl"></i><span class="text-xs font-medium tracking-wider">Copied!</span>`;
+            setTimeout(() => { copyBtn.classList.remove('success'); copyBtn.innerHTML = orig; }, 2600);
+          }
+          shareSuccess();
+        });
+      }
+
+      function shareToX() { window.open(`https://twitter.com/intent/tweet?text=${shareText()}&url=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToLinkedIn() { window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToWhatsApp() { window.open(`https://wa.me/?text=${shareText()}%0A${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToTelegram() { window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink())}&text=${shareText()}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToEmail() {
+        const body = `Hey,\n\nKaranga Oliver shared his Professional Referral Flywheel with me (ref: ${refCode}).\n\n${currentTargetURL}\n\nBest,\nKaranga Oliver`;
+        window.location.href = `mailto:?subject=Professional Opportunity via Karanga Oliver's Refly&body=${encodeURIComponent(body)}`;
+        shareSuccess();
+      }
+      function shareToSMS() { window.location.href = `sms:?body=Karanga Oliver's Professional Referral Flywheel (ref: ${refCode}) — ${referralLink()}`; shareSuccess(); }
+      function shareNative() {
+        if (navigator.share) navigator.share({ title: "Karanga Oliver's Refly", text: `Proven referral flywheel (ref: ${refCode})`, url: referralLink() }).then(() => shareSuccess());
+      }
+
+      function showQR() {
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(referralLink())}`;
+        elements.qrImage.src = qrUrl;
+        elements.qrModal.classList.remove("hidden"); elements.qrModal.classList.add("flex");
+      }
+      function hideQR() { elements.qrModal.classList.add("hidden"); elements.qrModal.classList.remove("flex"); }
+      function downloadQR() {
+        const a = document.createElement("a");
+        a.href = elements.qrImage.src;
+        a.download = `refly-qr-${refCode}.png`;
+        a.click(); hideQR();
+      }
+      function visitTarget() { window.open(currentTargetURL, '_blank', 'noopener,noreferrer'); }
+
+      function incrementShareCount() {
+        shareCount++;
+        const timestamp = new Date().toISOString();
+        shareLog.unshift({ time: timestamp, action: "share", ref: refCode });
+        if (shareLog.length > 50) shareLog.pop();
+        localStorage.setItem("refly_share_count", shareCount);
+        localStorage.setItem("refly_share_log", JSON.stringify(shareLog));
+        updateShareCountDisplay();
+      }
+
+      function updateShareCountDisplay() {
+        if (elements.shareCount) elements.shareCount.textContent = shareCount.toLocaleString();
+        const estimated = Math.round(shareCount * 12);
+        if (elements.estimatedReach) elements.estimatedReach.textContent = estimated.toLocaleString();
+      }
+
+      function simulateNetworkGrowth() {
+        const randomGrowth = Math.floor(Math.random() * 9) + 4;
+        shareCount += randomGrowth;
+        localStorage.setItem("refly_share_count", shareCount);
+        updateShareCountDisplay();
+
+        const activities = [
+          "2 professionals in your extended network spun the wheel",
+          "1 new referral just landed",
+          "3 people shared this flywheel",
+          "Someone in sales just forwarded it"
+        ];
+        if (elements.liveActivity) elements.liveActivity.textContent = activities[Math.floor(Math.random() * activities.length)];
+      }
+
+      function updateAdminAnalytics() {
+        if (elements.adminRefCode) elements.adminRefCode.textContent = refCode;
+        if (elements.adminShareCount) elements.adminShareCount.textContent = shareCount.toLocaleString();
+        if (elements.adminEstimatedReach) elements.adminEstimatedReach.textContent = Math.round(shareCount * 12).toLocaleString();
+      }
+
+      function buildShareButtons() {
+        const container = elements.shareGrid;
+        container.innerHTML = "";
+        const data = [
+          { icon: "fa-copy", label: "Copy Link", action: copyReferralLink, color: "bg-white text-black" },
+          { icon: "fa-whatsapp", label: "WhatsApp", action: shareToWhatsApp, color: "bg-[#25D366] text-white" },
+          { icon: "fa-x-twitter", label: "X", action: shareToX, color: "bg-black text-white" },
+          { icon: "fa-linkedin", label: "LinkedIn", action: shareToLinkedIn, color: "bg-[#0A66C2] text-white" },
+          { icon: "fa-telegram", label: "Telegram", action: shareToTelegram, color: "bg-[#229ED9] text-white" },
+          { icon: "fa-facebook", label: "Facebook", action: shareToFacebook, color: "bg-[#1877F2] text-white" },
+          { icon: "fa-envelope", label: "Email", action: shareToEmail, color: "bg-emerald-600 text-white" },
+          { icon: "fa-sms", label: "SMS", action: shareToSMS, color: "bg-zinc-700 text-white" },
+          { icon: "fa-share-from-square", label: "Share", action: shareNative, color: "bg-violet-600 text-white" },
+          { icon: "fa-qrcode", label: "QR Code", action: showQR, color: "bg-amber-500 text-white" }
+        ];
+        data.forEach(btn => {
+          const el = document.createElement("button");
+          el.className = `flex flex-col items-center justify-center gap-2 py-5 rounded-3xl hover:scale-105 active:scale-95 transition-all ${btn.color} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900`;
+          el.innerHTML = `<i class="fas ${btn.icon} text-3xl"></i><span class="text-xs font-medium tracking-wider">${btn.label}</span>`;
+          el.addEventListener('click', btn.action);
+          container.appendChild(el);
+        });
+      }
+
+      function showAdmin() {
+        elements.adminModal.classList.remove("hidden"); elements.adminModal.classList.add("flex");
+        elements.urlInput.value = currentTargetURL;
+        elements.bannerInput.value = currentBannerURL;
+        elements.bannerLinkInput.value = currentBannerLinkURL;
+        elements.sponsorNameInput.value = currentSponsorName;
+        elements.badgeTextInput.value = currentBadgeText;
+        elements.positionInput.value = currentBannerPosition;
+        updateBannerPreview();
+        updateAdminAnalytics();
+      }
+      function hideAdmin() { elements.adminModal.classList.add("hidden"); elements.adminModal.classList.remove("flex"); }
+
+      function updateBannerPreview() {
+        const prev = elements.bannerPreview;
+        const url = elements.bannerInput.value.trim();
+        prev.innerHTML = url ? bannerHTML(url) : `<div class="text-xs text-zinc-400 flex flex-col items-center py-8"><i class="fas fa-image text-4xl mb-3 opacity-30"></i>Banner preview will appear here</div>`;
+      }
+
+      function regenerateRefCode() {
+        refCode = `ko-${Math.random().toString(36).slice(2, 10)}`;
+        localStorage.setItem("refly_ref_code", refCode);
+        updateAdminAnalytics();
+        alert(`New Ref Code generated: ${refCode}`);
+      }
+
+      function resetShareCount() {
+        if (confirm("Reset all counters and logs?")) {
+          shareCount = 0;
+          shareLog = [];
+          localStorage.setItem("refly_share_count", "0");
+          localStorage.setItem("refly_share_log", "[]");
+          updateShareCountDisplay();
+          updateAdminAnalytics();
         }
+      }
 
-        // Initialize everything
-        window.onload = () => {
-            startCountdown();
+      function exportShareLog() {
+        if (!shareLog.length) return alert("No shares logged yet.");
+        let csv = "Timestamp,Action,RefCode\n";
+        shareLog.forEach(e => csv += `${e.time},${e.action},${e.ref}\n`);
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = `refly-share-log-${refCode}.csv`;
+        a.click(); URL.revokeObjectURL(url);
+      }
+
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+      });
+
+      function installPWA() {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+          showToast("Refly added to your home screen – always one tap away.");
+        } else {
+          showToast("PWA install ready – add this page to your home screen from browser menu.");
+        }
+      }
+
+      function saveConfig() {
+        const pass = elements.passwordInput.value;
+        if (pass !== DEFAULT_PASSWORD) return alert("❌ Wrong password.");
+        currentTargetURL = elements.urlInput.value.trim();
+        currentBannerURL = elements.bannerInput.value.trim();
+        currentBannerLinkURL = elements.bannerLinkInput.value.trim();
+        currentSponsorName = elements.sponsorNameInput.value.trim();
+        currentBadgeText = elements.badgeTextInput.value.trim();
+        currentBannerPosition = elements.positionInput.value;
+
+        if (currentTargetURL && !currentTargetURL.startsWith("http")) return alert("Valid http/https URL required.");
+
+        localStorage.setItem("refly_target_url", currentTargetURL);
+        localStorage.setItem("refly_banner_url", currentBannerURL);
+        localStorage.setItem("refly_banner_link", currentBannerLinkURL);
+        localStorage.setItem("refly_sponsor_name", currentSponsorName);
+        localStorage.setItem("refly_badge_text", currentBadgeText);
+        localStorage.setItem("refly_banner_position", currentBannerPosition);
+
+        updateDisplay();
+        hideAdmin();
+        showToast("✅ Flywheel updated across your entire network.");
+      }
+
+      function handleKeydown(e) {
+        if (e.key === "Escape") {
+          if (!elements.adminModal.classList.contains("hidden")) hideAdmin();
+          if (!elements.qrModal.classList.contains("hidden")) hideQR();
+        }
+      }
+
+      function init() {
+        elements = {
+          currentUrl: document.getElementById("current-url"),
+          bannerTop: document.getElementById("banner-slot-top"),
+          bannerHero: document.getElementById("banner-slot-hero"),
+          bannerMid: document.getElementById("banner-slot-mid"),
+          bannerBeforeShare: document.getElementById("banner-slot-before-share"),
+          bannerBottom: document.getElementById("banner-slot-bottom"),
+          shareGrid: document.getElementById("share-grid"),
+          adminModal: document.getElementById("admin-modal"),
+          qrModal: document.getElementById("qr-modal"),
+          qrImage: document.getElementById("qr-image"),
+          toast: document.getElementById("toast"),
+          toastText: document.getElementById("toast-text"),
+          shareCount: document.getElementById("share-count"),
+          estimatedReach: document.getElementById("estimated-reach"),
+          liveActivity: document.getElementById("live-activity"),
+          referredByLine: document.getElementById("referred-by-line"),
+          flywheel: document.getElementById("flywheel"),
+          passwordInput: document.getElementById("password-input"),
+          urlInput: document.getElementById("url-input"),
+          bannerInput: document.getElementById("banner-input"),
+          bannerLinkInput: document.getElementById("banner-link-input"),
+          sponsorNameInput: document.getElementById("sponsor-name-input"),
+          badgeTextInput: document.getElementById("badge-text-input"),
+          positionInput: document.getElementById("position-input"),
+          bannerPreview: document.getElementById("banner-preview"),
+          adminRefCode: document.getElementById("admin-ref-code"),
+          adminShareCount: document.getElementById("admin-share-count"),
+          adminEstimatedReach: document.getElementById("admin-estimated-reach")
         };
-    </script>
+
+        elements.bannerInput.addEventListener('input', updateBannerPreview);
+
+        simulateNetworkGrowth();
+        setInterval(simulateNetworkGrowth, 45000);
+
+        updateDisplay();
+        buildShareButtons();
+        document.addEventListener('keydown', handleKeydown);
+
+        console.log("%c✅ Karanga Oliver's Refly v2.5 loaded on viralrefer.app – Plausible analytics active", "color:#3b82f6; font-weight:bold");
+      }
+
+      return {
+        init, showAdmin, hideAdmin, saveConfig, handleBannerClick, visitTarget,
+        showQR, hideQR, downloadQR, showToast, regenerateRefCode, resetShareCount,
+        exportShareLog, manualSpin, installPWA
+      };
+    })();
+
+    window.onload = Refly.init;
+  </script>
 </body>
 </html>
