@@ -16,7 +16,7 @@
   <meta name="twitter:title" content="Karanga Oliver's Professional Referral Flywheel">
   <meta name="twitter:description" content="One powerful page. Any URL. Endless momentum.">
 
-  <!-- Plausible Analytics – correctly set for your domain -->
+  <!-- Plausible Analytics -->
   <script defer data-domain="viralrefer.app" src="https://plausible.io/js/script.js"></script>
 
   <title>Refly • Karanga Oliver's Professional Referral Flywheel</title>
@@ -313,8 +313,8 @@
 
   <script>
     /**
-     * Refly v2.6 – Karanga Oliver's Professional Referral Flywheel
-     * Updated with Option A: UTM parameters automatically added to target URL on button click
+     * Refly v2.7 – Karanga Oliver's Professional Referral Flywheel
+     * Full non-abbreviated version with Plausible custom event tracking for every share button
      */
 
     const Refly = (function () {
@@ -362,15 +362,29 @@
       }
 
       function placeBanner() {
-        const slots = { top: elements.bannerTop, hero: elements.bannerHero, mid: elements.bannerMid, "before-share": elements.bannerBeforeShare, bottom: elements.bannerBottom };
-        Object.values(slots).forEach(s => { s.classList.add("hidden"); s.innerHTML = ""; });
+        const slots = {
+          top: elements.bannerTop,
+          hero: elements.bannerHero,
+          mid: elements.bannerMid,
+          "before-share": elements.bannerBeforeShare,
+          bottom: elements.bannerBottom
+        };
+        Object.values(slots).forEach(slot => {
+          slot.classList.add("hidden");
+          slot.innerHTML = "";
+        });
         if (!currentBannerURL || currentBannerPosition === "none") return;
-        const slot = slots[currentBannerPosition];
-        if (slot) { slot.innerHTML = bannerHTML(currentBannerURL); slot.classList.remove("hidden"); }
+        const targetSlot = slots[currentBannerPosition];
+        if (targetSlot) {
+          targetSlot.innerHTML = bannerHTML(currentBannerURL);
+          targetSlot.classList.remove("hidden");
+        }
       }
 
       function handleBannerClick() {
-        if (currentBannerLinkURL && currentBannerLinkURL.startsWith("http")) window.open(currentBannerLinkURL, '_blank', 'noopener,noreferrer');
+        if (currentBannerLinkURL && currentBannerLinkURL.startsWith("http")) {
+          window.open(currentBannerLinkURL, '_blank', 'noopener,noreferrer');
+        }
       }
 
       function launchConfetti() {
@@ -458,6 +472,18 @@
         showToast("Thank you – your share just added real momentum to the flywheel 🔥");
       }
 
+      // Plausible share tracking
+      function trackShare(method) {
+        if (typeof plausible === 'function') {
+          plausible('Share Button Clicked', {
+            props: {
+              method: method,
+              ref: refCode
+            }
+          });
+        }
+      }
+
       const referralLink = () => {
         const url = new URL(window.location.href);
         url.searchParams.set("ref", refCode);
@@ -469,6 +495,7 @@
       );
 
       function copyReferralLink() {
+        trackShare("Copy Link");
         navigator.clipboard.writeText(referralLink()).then(() => {
           const copyBtn = Array.from(document.querySelectorAll('#share-grid button')).find(b => b.innerHTML.includes('fa-copy'));
           if (copyBtn) {
@@ -481,35 +508,81 @@
         });
       }
 
-      function shareToX() { window.open(`https://twitter.com/intent/tweet?text=${shareText()}&url=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
-      function shareToLinkedIn() { window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
-      function shareToFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
-      function shareToWhatsApp() { window.open(`https://wa.me/?text=${shareText()}%0A${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
-      function shareToTelegram() { window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink())}&text=${shareText()}`, '_blank', 'noopener,noreferrer'); shareSuccess(); }
+      function shareToX() {
+        trackShare("X");
+        window.open(`https://twitter.com/intent/tweet?text=${shareText()}&url=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer');
+        shareSuccess();
+      }
+
+      function shareToLinkedIn() {
+        trackShare("LinkedIn");
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer');
+        shareSuccess();
+      }
+
+      function shareToFacebook() {
+        trackShare("Facebook");
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer');
+        shareSuccess();
+      }
+
+      function shareToWhatsApp() {
+        trackShare("WhatsApp");
+        window.open(`https://wa.me/?text=${shareText()}%0A${encodeURIComponent(referralLink())}`, '_blank', 'noopener,noreferrer');
+        shareSuccess();
+      }
+
+      function shareToTelegram() {
+        trackShare("Telegram");
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink())}&text=${shareText()}`, '_blank', 'noopener,noreferrer');
+        shareSuccess();
+      }
+
       function shareToEmail() {
+        trackShare("Email");
         const body = `Hey,\n\nKaranga Oliver shared his Professional Referral Flywheel with me (ref: ${refCode}).\n\n${currentTargetURL}\n\nBest,\nKaranga Oliver`;
         window.location.href = `mailto:?subject=Professional Opportunity via Karanga Oliver's Refly&body=${encodeURIComponent(body)}`;
         shareSuccess();
       }
-      function shareToSMS() { window.location.href = `sms:?body=Karanga Oliver's Professional Referral Flywheel (ref: ${refCode}) — ${referralLink()}`; shareSuccess(); }
+
+      function shareToSMS() {
+        trackShare("SMS");
+        window.location.href = `sms:?body=Karanga Oliver's Professional Referral Flywheel (ref: ${refCode}) — ${referralLink()}`;
+        shareSuccess();
+      }
+
       function shareNative() {
-        if (navigator.share) navigator.share({ title: "Karanga Oliver's Refly", text: `Proven referral flywheel (ref: ${refCode})`, url: referralLink() }).then(() => shareSuccess());
+        trackShare("Native Share");
+        if (navigator.share) {
+          navigator.share({
+            title: "Karanga Oliver's Refly",
+            text: `Proven referral flywheel (ref: ${refCode})`,
+            url: referralLink()
+          }).then(() => shareSuccess());
+        }
       }
 
       function showQR() {
+        trackShare("QR Code");
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(referralLink())}`;
         elements.qrImage.src = qrUrl;
-        elements.qrModal.classList.remove("hidden"); elements.qrModal.classList.add("flex");
+        elements.qrModal.classList.remove("hidden");
+        elements.qrModal.classList.add("flex");
       }
-      function hideQR() { elements.qrModal.classList.add("hidden"); elements.qrModal.classList.remove("flex"); }
+
+      function hideQR() {
+        elements.qrModal.classList.add("hidden");
+        elements.qrModal.classList.remove("flex");
+      }
+
       function downloadQR() {
         const a = document.createElement("a");
         a.href = elements.qrImage.src;
         a.download = `refly-qr-${refCode}.png`;
-        a.click(); hideQR();
+        a.click();
+        hideQR();
       }
 
-      // Option A: UTM parameters added on button click
       function visitTarget() {
         let target = currentTargetURL;
         try {
@@ -518,9 +591,7 @@
           url.searchParams.set("utm_medium", "flywheel");
           url.searchParams.set("utm_campaign", refCode);
           target = url.toString();
-        } catch (e) {
-          // fallback if URL is invalid
-        }
+        } catch (e) {}
         window.open(target, '_blank', 'noopener,noreferrer');
       }
 
@@ -586,7 +657,8 @@
       }
 
       function showAdmin() {
-        elements.adminModal.classList.remove("hidden"); elements.adminModal.classList.add("flex");
+        elements.adminModal.classList.remove("hidden");
+        elements.adminModal.classList.add("flex");
         elements.urlInput.value = currentTargetURL;
         elements.bannerInput.value = currentBannerURL;
         elements.bannerLinkInput.value = currentBannerLinkURL;
@@ -596,7 +668,11 @@
         updateBannerPreview();
         updateAdminAnalytics();
       }
-      function hideAdmin() { elements.adminModal.classList.add("hidden"); elements.adminModal.classList.remove("flex"); }
+
+      function hideAdmin() {
+        elements.adminModal.classList.add("hidden");
+        elements.adminModal.classList.remove("flex");
+      }
 
       function updateBannerPreview() {
         const prev = elements.bannerPreview;
@@ -629,8 +705,10 @@
         const blob = new Blob([csv], { type: "text/csv" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        a.href = url; a.download = `refly-share-log-${refCode}.csv`;
-        a.click(); URL.revokeObjectURL(url);
+        a.href = url;
+        a.download = `refly-share-log-${refCode}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
       }
 
       let deferredPrompt;
@@ -721,13 +799,25 @@
         buildShareButtons();
         document.addEventListener('keydown', handleKeydown);
 
-        console.log("%c✅ Karanga Oliver's Refly v2.6 loaded on viralrefer.app – UTM parameters now active on Opportunity button", "color:#3b82f6; font-weight:bold");
+        console.log("%c✅ Karanga Oliver's Refly v2.7 loaded – Share Button Clicked events now tracked in Plausible", "color:#3b82f6; font-weight:bold");
       }
 
       return {
-        init, showAdmin, hideAdmin, saveConfig, handleBannerClick, visitTarget,
-        showQR, hideQR, downloadQR, showToast, regenerateRefCode, resetShareCount,
-        exportShareLog, manualSpin, installPWA
+        init,
+        showAdmin,
+        hideAdmin,
+        saveConfig,
+        handleBannerClick,
+        visitTarget,
+        showQR,
+        hideQR,
+        downloadQR,
+        showToast,
+        regenerateRefCode,
+        resetShareCount,
+        exportShareLog,
+        manualSpin,
+        installPWA
       };
     })();
 
