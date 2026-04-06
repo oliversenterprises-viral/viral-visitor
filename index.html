@@ -314,7 +314,7 @@
   <script>
     /**
      * Refly v2.7 – Karanga Oliver's Professional Referral Flywheel
-     * Full non-abbreviated version with Plausible custom event tracking for every share button
+     * Full non-abbreviated version with Plausible custom event tracking for every share button click
      */
 
     const Refly = (function () {
@@ -472,7 +472,6 @@
         showToast("Thank you – your share just added real momentum to the flywheel 🔥");
       }
 
-      // Plausible share tracking
       function trackShare(method) {
         if (typeof plausible === 'function') {
           plausible('Share Button Clicked', {
