@@ -16,7 +16,7 @@
   <meta name="twitter:title" content="Karanga Oliver's Professional Referral Flywheel">
   <meta name="twitter:description" content="One powerful page. Any URL. Endless momentum.">
 
-  <!-- Plausible Analytics – NOW CONFIGURED FOR YOUR DOMAIN -->
+  <!-- Plausible Analytics – correctly set for your domain -->
   <script defer data-domain="viralrefer.app" src="https://plausible.io/js/script.js"></script>
 
   <title>Refly • Karanga Oliver's Professional Referral Flywheel</title>
@@ -313,8 +313,8 @@
 
   <script>
     /**
-     * Refly v2.5 – Karanga Oliver's Professional Referral Flywheel
-     * Updated for https://viralrefer.app with live Plausible analytics
+     * Refly v2.6 – Karanga Oliver's Professional Referral Flywheel
+     * Updated with Option A: UTM parameters automatically added to target URL on button click
      */
 
     const Refly = (function () {
@@ -508,7 +508,21 @@
         a.download = `refly-qr-${refCode}.png`;
         a.click(); hideQR();
       }
-      function visitTarget() { window.open(currentTargetURL, '_blank', 'noopener,noreferrer'); }
+
+      // Option A: UTM parameters added on button click
+      function visitTarget() {
+        let target = currentTargetURL;
+        try {
+          const url = new URL(target);
+          url.searchParams.set("utm_source", "refly");
+          url.searchParams.set("utm_medium", "flywheel");
+          url.searchParams.set("utm_campaign", refCode);
+          target = url.toString();
+        } catch (e) {
+          // fallback if URL is invalid
+        }
+        window.open(target, '_blank', 'noopener,noreferrer');
+      }
 
       function incrementShareCount() {
         shareCount++;
@@ -707,7 +721,7 @@
         buildShareButtons();
         document.addEventListener('keydown', handleKeydown);
 
-        console.log("%c✅ Karanga Oliver's Refly v2.5 loaded on viralrefer.app – Plausible analytics active", "color:#3b82f6; font-weight:bold");
+        console.log("%c✅ Karanga Oliver's Refly v2.6 loaded on viralrefer.app – UTM parameters now active on Opportunity button", "color:#3b82f6; font-weight:bold");
       }
 
       return {
