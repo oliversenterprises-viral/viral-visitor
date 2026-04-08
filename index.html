@@ -9,7 +9,7 @@
   <meta property="og:image" content="https://picsum.photos/id/1015/1200/630">
   <title>Viral Refer • Earn Rewards</title>
 
-  <!-- Privacy-friendly analytics by Plausible (EXACT script from your dashboard) -->
+  <!-- Privacy-friendly analytics by Plausible -->
   <script async src="https://plausible.io/js/pa-0bFg9bCDa8Gg6diUkstra.js"></script>
   <script>
     window.plausible = window.plausible || function(){(plausible.q = plausible.q || []).push(arguments)}
@@ -65,7 +65,7 @@
         <i class="fa-solid fa-circle-check"></i> Plausible Live
       </div>
       
-      <!-- ADMIN BUTTON - HIDDEN FOR EVERYONE EXCEPT YOU -->
+      <!-- ADMIN BUTTON - ONLY VISIBLE TO YOU -->
       <button onclick="openAdminPanel()" 
               id="admin-nav-button"
               class="hidden px-6 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-3xl text-sm font-semibold transition-all flex items-center gap-2 shadow-lg shadow-rose-500/30">
@@ -262,7 +262,7 @@
   </div>
 </div>
 
-<!-- ADMIN PANEL (unchanged) -->
+<!-- ADMIN PANEL -->
 <div id="admin-modal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center z-[300]">
   <div class="bg-zinc-900 rounded-3xl w-full max-w-5xl mx-6 max-h-[92vh] overflow-hidden flex flex-col">
     <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between">
@@ -280,7 +280,6 @@
         <button onclick="closeAdminPanel()" class="w-10 h-10 flex items-center justify-center text-2xl hover:bg-white/10 rounded-2xl transition-colors">✕</button>
       </div>
     </div>
-    <!-- rest of admin panel tabs unchanged -->
     <div class="flex border-b border-white/10 px-8 text-sm overflow-x-auto">
       <button onclick="switchAdminTab(0)" id="tab-0" class="admin-tab admin-tab-active px-8 py-5 font-semibold">GENERAL</button>
       <button onclick="switchAdminTab(1)" id="tab-1" class="admin-tab px-8 py-5 font-semibold">WIN THE BANNER</button>
@@ -288,8 +287,6 @@
       <button onclick="switchAdminTab(3)" id="tab-3" class="admin-tab px-8 py-5 font-semibold">ADVANCED</button>
     </div>
     <div class="flex-1 overflow-auto p-8">
-      <!-- TAB CONTENTS (same as before) -->
-      <!-- TAB 0 GENERAL -->
       <div id="tab-content-0">
         <div class="grid grid-cols-2 gap-8">
           <div><label class="block text-xs tracking-widest text-zinc-400 mb-2">WEBSITE NAME</label><input id="admin-site-name" type="text" class="w-full bg-zinc-800 border border-white/20 rounded-2xl px-6 py-4 focus:border-violet-400 outline-none"></div>
@@ -323,7 +320,6 @@
           </div>
         </div>
       </div>
-      <!-- TAB 1 WIN THE BANNER -->
       <div id="tab-content-1" class="hidden space-y-10">
         <div class="border border-white/10 rounded-3xl p-8">
           <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i> Win The Banner Prize Settings</h3>
@@ -344,7 +340,6 @@
           <div id="admin-leaderboard-list" class="space-y-4"></div>
         </div>
       </div>
-      <!-- TAB 2 ANALYTICS -->
       <div id="tab-content-2" class="hidden">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div class="analytics-card bg-zinc-900 border border-white/10 rounded-3xl p-6"><div class="text-xs text-zinc-400">TOTAL VISITORS</div><div id="stat-visitors" class="text-5xl font-bold text-white mt-2">1,284</div></div>
@@ -361,7 +356,6 @@
           <div id="activity-log" class="text-sm space-y-3 text-zinc-400"></div>
         </div>
       </div>
-      <!-- TAB 3 ADVANCED -->
       <div id="tab-content-3" class="hidden space-y-8">
         <div class="border border-white/10 rounded-3xl p-8">
           <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><i class="fa-solid fa-key"></i> Security</h3>
@@ -381,9 +375,6 @@
     </div>
   </div>
 </div>
-
-<!-- WINNER MODAL, WINNER CLAIM BUTTON, FOOTER, TOAST (unchanged) -->
-<!-- ... (all the same as previous version) ... -->
 
 <!-- WINNER MODAL -->
 <div id="winner-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[300]">
@@ -428,9 +419,7 @@
 </div>
 
 <script>
-  // NEW PASSWORD (now only used when you visit with the secret key)
   let ADMIN_PASSWORD = "nova2026";
-
   let config = {
     siteName: "AcmeApp",
     baseUrl: "https://viralrefer.app",
@@ -549,14 +538,13 @@
     loadConfig();
     detectReferralAttribution();
 
-    // === ADMIN ACCESS CONTROL ===
+    // ADMIN ACCESS CONTROL - only you see the button
     const urlParams = new URLSearchParams(window.location.search);
     const adminKey = urlParams.get('admin');
-    
     if (adminKey === "nova2026") {
       isAdminMode = true;
       document.getElementById('admin-nav-button').classList.remove('hidden');
-      console.log('%c🔓 Admin mode activated (secret key used)', 'color:#22c55e;font-weight:bold');
+      console.log('%c🔓 Admin mode activated with secret key', 'color:#22c55e;font-weight:bold');
     }
 
     const savedUser = localStorage.getItem('viralCurrentUser');
@@ -574,56 +562,435 @@
     console.log('%c✅ Viral Refer ready with OFFICIAL Plausible script', 'color:#a855f7;font-weight:bold');
   }
 
+  function detectReferralAttribution() {
+    const params = new URLSearchParams(window.location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      document.getElementById('referral-attribution').classList.remove('hidden');
+      document.getElementById('referrer-name').textContent = "Previous Referrer";
+      trackEvent("Referral Attribution Detected", refCode, { 
+        method: "REFERRAL_LINK", 
+        ref: refCode 
+      });
+    }
+  }
+
+  function updateAllTexts() {
+    document.querySelectorAll('#hero-site-name').forEach(el => el.textContent = config.siteName);
+    document.getElementById('hero-subtitle').innerHTML = `Share <span class="font-semibold text-white">${config.siteName}</span> and ${config.rewardText}`;
+    document.getElementById('step1-title').textContent = config.howItWorks.step1Title;
+    document.getElementById('step1-desc').textContent = config.howItWorks.step1Desc;
+    document.getElementById('step2-title').textContent = config.howItWorks.step2Title;
+    document.getElementById('step2-desc').textContent = config.howItWorks.step2Desc;
+    document.getElementById('step3-title').textContent = config.howItWorks.step3Title;
+    document.getElementById('step3-desc').textContent = config.howItWorks.step3Desc;
+    document.getElementById('prize-title-display').textContent = config.leaderboardPrize.title;
+    document.getElementById('prize-desc-display').textContent = config.leaderboardPrize.description;
+    document.getElementById('prize-perks-display').textContent = config.leaderboardPrize.perks || "";
+    document.getElementById('min-referrals-display').textContent = config.leaderboardPrize.minReferrals;
+  }
+
+  function generateReferralLink() {
+    const userId = currentUser ? btoa(currentUser.email).slice(0,8) : "DEMO123";
+    referralLink = `${config.baseUrl}/ref/${userId}`;
+    document.getElementById('ref-link').value = referralLink;
+    document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
+  }
+
+  function generateNewCode() {
+    const userId = currentUser ? btoa(currentUser.email + Date.now()).slice(0,8) : "NEW" + Math.floor(Math.random()*9999);
+    referralLink = `${config.baseUrl}/ref/${userId}`;
+    document.getElementById('ref-link').value = referralLink;
+    document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
+    showToast("✅ New referral code generated!");
+    trackEvent("New Referral Code Generated", "", { 
+      method: "NEW_CODE", 
+      ref: referralLink 
+    });
+  }
+
+  function renderWinnerBanner() {
+    const winner = config.leaderboard[0];
+    const container = document.getElementById('winner-banner');
+    let bannerUrl = config.leaderboardPrize.bannerPreviewUrl;
+    let name = "Example Winner";
+    let referrals = config.leaderboardPrize.minReferrals;
+    if (winner && winner.referrals >= config.leaderboardPrize.minReferrals) {
+      bannerUrl = winner.bannerUrl;
+      name = winner.name;
+      referrals = winner.referrals;
+    }
+    container.innerHTML = `
+      <a href="${winner ? winner.website : '#'}" target="_blank">
+        <img src="${bannerUrl}" class="w-full h-auto rounded-3xl" alt="Prize banner">
+      </a>
+      <div class="p-6 text-center">
+        <div class="font-semibold text-xl">${name} <span class="text-emerald-400">• #1</span></div>
+        <div class="text-sm text-zinc-400">${referrals} referrals • ${config.leaderboardPrize.duration}</div>
+      </div>
+    `;
+  }
+
+  function renderLeaderboard() {
+    const container = document.getElementById('leaderboard-container');
+    container.innerHTML = '';
+    const qualified = config.leaderboard.filter(p => p.referrals >= config.leaderboardPrize.minReferrals);
+    qualified.forEach((person, index) => {
+      const rank = index + 1;
+      const row = document.createElement('div');
+      row.className = `leaderboard-row flex items-center justify-between bg-zinc-900 border border-white/10 rounded-3xl px-8 py-6 ${rank === 1 ? 'border-amber-400 shadow-2xl shadow-amber-400/30' : ''}`;
+      row.innerHTML = `
+        <div class="flex items-center gap-6">
+          <div class="w-12 h-12 bg-zinc-800 rounded-2xl flex items-center justify-center text-3xl font-bold ${rank === 1 ? 'text-amber-400' : 'text-zinc-400'}">${rank}</div>
+          <div>
+            <div class="font-semibold text-xl">${person.name}</div>
+            <div class="text-sm text-zinc-400">${person.referrals} referrals</div>
+          </div>
+        </div>
+        <a href="${person.website}" target="_blank" class="text-violet-400 hover:text-violet-300 font-medium flex items-center gap-2"> Visit site <i class="fa-solid fa-arrow-up-right-from-square"></i> </a>
+      `;
+      container.appendChild(row);
+    });
+    if (qualified.length === 0) {
+      container.innerHTML = `<div class="text-center py-12 text-zinc-400">No one has reached ${config.leaderboardPrize.minReferrals} referrals yet.<br>Be the first!</div>`;
+    }
+    updateWinnerButtonVisibility();
+  }
+
+  function updateWinnerButtonVisibility() {
+    const btn = document.getElementById('winner-claim-btn');
+    const hasWinner = config.leaderboard.length > 0 && config.leaderboard[0].referrals >= config.leaderboardPrize.minReferrals;
+    btn.classList.toggle('hidden', !hasWinner);
+  }
+
+  function updateMyStats() {
+    if (!currentUser) return;
+    document.getElementById('my-referrals').textContent = currentUser.referrals;
+    const min = config.leaderboardPrize.minReferrals;
+    const progress = Math.min(Math.floor((currentUser.referrals / min) * 100), 100);
+    document.getElementById('progress-bar').style.width = `${progress}%`;
+    document.getElementById('progress-text').textContent = `${currentUser.referrals}/${min}`;
+    const rank = config.leaderboard.filter(p => p.referrals > currentUser.referrals).length + 1;
+    document.getElementById('my-rank').textContent = `#${rank}`;
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(referralLink).then(() => {
+      config.analytics.linkCopies++;
+      trackEvent("Link Copied", referralLink, { 
+        method: "COPY", 
+        ref: referralLink 
+      });
+      saveConfig();
+      showToast("✅ Link copied to clipboard!");
+      confettiBurst();
+      if (currentUser) {
+        currentUser.referrals = (currentUser.referrals || 0) + 1;
+        updateMyStats();
+        localStorage.setItem('viralCurrentUser', JSON.stringify(currentUser));
+      }
+    });
+  }
+
+  function shareTo(platform) {
+    const message = `Join me on ${config.siteName} – help me win the homepage banner! ${referralLink}`;
+    let url = '';
+    if (platform === 'x') url = `https://x.com/intent/tweet?text=${encodeURIComponent(message)}`;
+    else if (platform === 'facebook') url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`;
+    else if (platform === 'whatsapp') url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    else if (platform === 'linkedin') url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink)}`;
+    else if (platform === 'telegram') url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
+    else if (platform === 'sms') url = `sms:?body=${encodeURIComponent(message)}`;
+
+    const methodName = platform.toUpperCase();
+    
+    trackEvent("Share", referralLink, { 
+      method: methodName, 
+      ref: referralLink 
+    });
+
+    config.analytics.shares[platform] = (config.analytics.shares[platform] || 0) + 1;
+    saveConfig();
+    confettiBurst();
+
+    if (url) window.open(url, '_blank');
+  }
+
+  function nativeShare() {
+    if (navigator.share) {
+      navigator.share({
+        title: config.siteName,
+        text: `Help me win the homepage banner!`,
+        url: referralLink
+      })
+      .then(() => {
+        trackEvent("Share", referralLink, { 
+          method: "NATIVE", 
+          ref: referralLink 
+        });
+        confettiBurst();
+      })
+      .catch(() => {});
+    } else {
+      showToast("Native sharing not supported on this device");
+    }
+  }
+
+  function showQRModal() {
+    const modal = document.getElementById('qr-modal');
+    document.getElementById('modal-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
+    modal.classList.remove('hidden');
+    
+    trackEvent("QR Code Viewed", "", { 
+      method: "QR_CODE", 
+      ref: referralLink 
+    });
+  }
+
+  function hideQRModal() { document.getElementById('qr-modal').classList.add('hidden'); }
+
+  function showEmailModal() { document.getElementById('email-modal').classList.remove('hidden'); }
+  function hideEmailModal() { document.getElementById('email-modal').classList.add('hidden'); }
+  function sendEmails() {
+    hideEmailModal();
+    showToast("✅ Invites sent!");
+    confettiBurst();
+    trackEvent("Email Invites Sent", "", { 
+      method: "EMAIL", 
+      ref: referralLink 
+    });
+  }
+
+  function showWinnerForm() {
+    const winner = config.leaderboard[0];
+    if (!winner) return;
+    document.getElementById('winner-name').value = winner.name;
+    document.getElementById('winner-modal').classList.remove('hidden');
+  }
+  function hideWinnerForm() { document.getElementById('winner-modal').classList.add('hidden'); }
+
+  function submitWinnerForm() {
+    const email = document.getElementById('winner-email').value.trim();
+    const bannerUrl = document.getElementById('winner-banner-url').value.trim();
+    if (!email || !bannerUrl) return alert("Email and Banner URL are required");
+    
+    const submission = { 
+      time: new Date().toLocaleString(), 
+      name: document.getElementById('winner-name').value, 
+      email, 
+      bannerUrl, 
+      message: document.getElementById('winner-message').value.trim() || "No message" 
+    };
+    
+    config.analytics.submissions.unshift(submission);
+    if (config.analytics.submissions.length > 10) config.analytics.submissions.pop();
+    saveConfig();
+    
+    hideWinnerForm();
+    showToast("✅ Submission sent!");
+    trackEvent("Winner Banner Submission", submission.name, { 
+      method: "WINNER_FORM", 
+      ref: referralLink 
+    });
+  }
+
   function openAdminPanel() {
-    if (!isAdminMode) return; // extra safety
+    if (!isAdminMode) return;
     const entered = prompt("🔒 Enter Admin Password:");
     if (entered === ADMIN_PASSWORD) {
       document.getElementById('admin-modal').classList.remove('hidden');
       loadAdminFormValues();
       switchAdminTab(0);
-    } else if (entered) {
-      alert("❌ Access denied.");
+    } else if (entered) alert("❌ Access denied.");
+  }
+  function closeAdminPanel() { document.getElementById('admin-modal').classList.add('hidden'); }
+
+  function loadAdminFormValues() {
+    document.getElementById('admin-site-name').value = config.siteName;
+    document.getElementById('admin-base-url').value = config.baseUrl;
+    document.getElementById('admin-reward-text').value = config.rewardText;
+    const hexColor = "#" + config.primaryColor.split(' ').map(n => parseInt(n).toString(16).padStart(2,'0')).join('');
+    const colorInput = document.getElementById('admin-primary-color');
+    colorInput.value = hexColor;
+    document.getElementById('color-preview').style.backgroundColor = hexColor;
+    colorInput.addEventListener('input', () => { document.getElementById('color-preview').style.backgroundColor = colorInput.value; });
+    document.getElementById('how-step1-title').value = config.howItWorks.step1Title;
+    document.getElementById('how-step1-desc').value = config.howItWorks.step1Desc;
+    document.getElementById('how-step2-title').value = config.howItWorks.step2Title;
+    document.getElementById('how-step2-desc').value = config.howItWorks.step2Desc;
+    document.getElementById('how-step3-title').value = config.howItWorks.step3Title;
+    document.getElementById('how-step3-desc').value = config.howItWorks.step3Desc;
+    document.getElementById('prize-title').value = config.leaderboardPrize.title;
+    document.getElementById('prize-duration').value = config.leaderboardPrize.duration;
+    document.getElementById('prize-desc').value = config.leaderboardPrize.description;
+    document.getElementById('prize-perks').value = config.leaderboardPrize.perks || "";
+    document.getElementById('prize-banner-preview').value = config.leaderboardPrize.bannerPreviewUrl || "";
+    document.getElementById('min-referrals').value = config.leaderboardPrize.minReferrals;
+    renderAdminLeaderboardList();
+    renderAnalytics();
+  }
+
+  function renderAdminLeaderboardList() {
+    const list = document.getElementById('admin-leaderboard-list');
+    list.innerHTML = '';
+    config.leaderboard.forEach((entry, i) => {
+      const div = document.createElement('div');
+      div.className = "flex gap-4 bg-zinc-800 rounded-2xl p-4 items-center";
+      div.innerHTML = `
+        <input type="text" value="${entry.name}" id="lb-name-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
+        <input type="number" value="${entry.referrals}" id="lb-ref-${i}" class="w-28 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3 text-center">
+        <input type="text" value="${entry.website}" id="lb-site-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
+        <input type="text" value="${entry.bannerUrl}" id="lb-banner-${i}" class="flex-1 bg-zinc-900 border border-white/20 rounded-xl px-5 py-3">
+        <button onclick="removeLeaderboardEntry(${i})" class="px-4 py-3 text-rose-400 hover:bg-rose-400/10 rounded-xl"><i class="fa-solid fa-trash"></i></button>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function addLeaderboardEntry() {
+    config.leaderboard.push({ name: "New Referrer", referrals: 10, website: "https://newsite.com", bannerUrl: "https://picsum.photos/id/870/600/180" });
+    renderAdminLeaderboardList();
+  }
+
+  function removeLeaderboardEntry(index) {
+    if (confirm("Delete this entry?")) {
+      config.leaderboard.splice(index, 1);
+      renderAdminLeaderboardList();
+      renderLeaderboard();
+      updateWinnerButtonVisibility();
+      renderWinnerBanner();
     }
   }
 
-  // ... (all other functions remain exactly the same as the previous full version) ...
-  // For brevity in this response, the rest of the script is unchanged from the last full file you received.
-  // The only differences are the admin button hiding logic and the new password.
+  function saveAdminChanges() {
+    config.siteName = document.getElementById('admin-site-name').value.trim() || config.siteName;
+    config.baseUrl = document.getElementById('admin-base-url').value.trim() || config.baseUrl;
+    config.rewardText = document.getElementById('admin-reward-text').value.trim() || config.rewardText;
+    let hex = document.getElementById('admin-primary-color').value;
+    if (hex.startsWith('#')) hex = hex.slice(1);
+    if (hex.length === 6) {
+      const r = parseInt(hex.slice(0,2),16), g = parseInt(hex.slice(2,4),16), b = parseInt(hex.slice(4,6),16);
+      config.primaryColor = `${r} ${g} ${b}`;
+      document.documentElement.style.setProperty('--primary', config.primaryColor);
+    }
+    config.howItWorks.step1Title = document.getElementById('how-step1-title').value.trim() || config.howItWorks.step1Title;
+    config.howItWorks.step1Desc = document.getElementById('how-step1-desc').value.trim() || config.howItWorks.step1Desc;
+    config.howItWorks.step2Title = document.getElementById('how-step2-title').value.trim() || config.howItWorks.step2Title;
+    config.howItWorks.step2Desc = document.getElementById('how-step2-desc').value.trim() || config.howItWorks.step2Desc;
+    config.howItWorks.step3Title = document.getElementById('how-step3-title').value.trim() || config.howItWorks.step3Title;
+    config.howItWorks.step3Desc = document.getElementById('how-step3-desc').value.trim() || config.howItWorks.step3Desc;
+    config.leaderboardPrize.title = document.getElementById('prize-title').value;
+    config.leaderboardPrize.duration = document.getElementById('prize-duration').value;
+    config.leaderboardPrize.description = document.getElementById('prize-desc').value;
+    config.leaderboardPrize.perks = document.getElementById('prize-perks').value;
+    config.leaderboardPrize.bannerPreviewUrl = document.getElementById('prize-banner-preview').value || config.leaderboardPrize.bannerPreviewUrl;
+    config.leaderboardPrize.minReferrals = parseInt(document.getElementById('min-referrals').value) || 10;
+    config.leaderboard = config.leaderboard.map((_, i) => ({
+      name: document.getElementById(`lb-name-${i}`).value,
+      referrals: parseInt(document.getElementById(`lb-ref-${i}`).value) || 0,
+      website: document.getElementById(`lb-site-${i}`).value,
+      bannerUrl: document.getElementById(`lb-banner-${i}`).value
+    }));
+    saveConfig();
+    updateAllTexts();
+    renderLeaderboard();
+    renderWinnerBanner();
+    updateWinnerButtonVisibility();
+    showToast("✅ All changes saved & live on the page!");
+  }
 
-  function detectReferralAttribution() { /* same as before */ }
-  function updateAllTexts() { /* same */ }
-  function generateReferralLink() { /* same */ }
-  function generateNewCode() { /* same */ }
-  function renderWinnerBanner() { /* same */ }
-  function renderLeaderboard() { /* same */ }
-  function updateWinnerButtonVisibility() { /* same */ }
-  function updateMyStats() { /* same */ }
-  function copyLink() { /* same */ }
-  function shareTo(platform) { /* same */ }
-  function nativeShare() { /* same */ }
-  function showQRModal() { /* same */ }
-  function hideQRModal() { /* same */ }
-  function showEmailModal() { /* same */ }
-  function hideEmailModal() { /* same */ }
-  function sendEmails() { /* same */ }
-  function showWinnerForm() { /* same */ }
-  function hideWinnerForm() { /* same */ }
-  function submitWinnerForm() { /* same */ }
-  function closeAdminPanel() { /* same */ }
-  function loadAdminFormValues() { /* same */ }
-  function renderAdminLeaderboardList() { /* same */ }
-  function addLeaderboardEntry() { /* same */ }
-  function removeLeaderboardEntry(index) { /* same */ }
-  function saveAdminChanges() { /* same */ }
-  function switchAdminTab(tab) { /* same */ }
-  function renderAnalytics() { /* same */ }
-  function renderActivityLog() { /* same */ }
-  function showToast(message) { /* same */ }
-  function confettiBurst() { /* same */ }
-  function changeAdminPassword() { /* same */ }
-  function resetAllToDefaults() { /* same */ }
-  function exportConfig() { /* same */ }
-  function trackBannerClick() { /* same */ }
+  function switchAdminTab(tab) {
+    for (let i = 0; i < 4; i++) {
+      document.getElementById(`tab-content-${i}`).classList.toggle('hidden', i !== tab);
+      document.getElementById(`tab-${i}`).classList.toggle('admin-tab-active', i === tab);
+    }
+    if (tab === 2) setTimeout(renderAnalytics, 50);
+  }
+
+  function renderAnalytics() {
+    document.getElementById('stat-visitors').textContent = config.analytics.visitors.toLocaleString();
+    document.getElementById('stat-copies').textContent = config.analytics.linkCopies;
+    document.getElementById('stat-shares').textContent = Object.values(config.analytics.shares).reduce((a,b)=>a+b,0);
+    document.getElementById('stat-conversion').textContent = config.analytics.conversionRate + "%";
+    renderActivityLog();
+
+    if (charts.shares) charts.shares.destroy();
+    charts.shares = new Chart(document.getElementById('sharesChart'), { type: 'doughnut', data: { labels: ['X', 'Facebook', 'WhatsApp', 'LinkedIn', 'Email'], datasets: [{ data: Object.values(config.analytics.shares), backgroundColor: ['#000000', '#1877F2', '#25D366', '#0A66C2', '#EA4335'] }] }, options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } } });
+
+    if (charts.growth) charts.growth.destroy();
+    charts.growth = new Chart(document.getElementById('growthChart'), { type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ label: 'Referrals', data: config.analytics.growthData, borderColor: '#a855f7', tension: 0.4 }] }, options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.1)' } } } } });
+
+    if (!document.getElementById('test-plausible-btn')) {
+      const btn = document.createElement('button');
+      btn.id = 'test-plausible-btn';
+      btn.className = 'mt-6 px-8 py-4 bg-violet-600 hover:bg-violet-500 text-white rounded-2xl font-semibold flex items-center gap-2';
+      btn.innerHTML = '🔥 Send Test Plausible Event';
+      btn.onclick = () => {
+        trackEvent("Share", "", { method: "TEST", ref: referralLink });
+        showToast("✅ Test event sent to Plausible!");
+      };
+      document.getElementById('tab-content-2').appendChild(btn);
+    }
+  }
+
+  function renderActivityLog() {
+    const logDiv = document.getElementById('activity-log');
+    let html = config.analytics.activityLog.map(entry => `<div class="flex justify-between"><span class="text-zinc-500">${entry.time}</span><span class="text-white">${entry.action}</span></div>`).join('');
+    if (config.analytics.submissions.length > 0) {
+      html += `<div class="mt-4 pt-4 border-t border-white/10"><strong class="text-amber-400">Recent Banner Submissions:</strong>`;
+      config.analytics.submissions.slice(0,3).forEach(s => { html += `<div class="text-xs mt-2">${s.time} – ${s.name} (${s.email})</div>`; });
+      html += `</div>`;
+    }
+    logDiv.innerHTML = html || '<div class="text-zinc-500">No activity yet...</div>';
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toast-text').innerHTML = message;
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => { toast.classList.add('hidden'); toast.style.opacity = '1'; }, 300);
+    }, 2800);
+  }
+
+  function confettiBurst() {
+    confetti({ particleCount: 220, spread: 100, origin: { y: 0.6 }, colors: ['#a855f7', '#c026d3', '#22c55e', '#eab308'] });
+  }
+
+  function changeAdminPassword() {
+    const newPass = document.getElementById('admin-new-password').value.trim();
+    if (newPass.length < 4) return alert("Password too short");
+    ADMIN_PASSWORD = newPass;
+    showToast("🔐 New admin password saved");
+    document.getElementById('admin-new-password').value = '';
+  }
+
+  function resetAllToDefaults() {
+    if (confirm("Reset EVERYTHING?")) {
+      try { localStorage.removeItem("viralReferConfig"); localStorage.removeItem("viralCurrentUser"); } catch(e) {}
+      location.reload();
+    }
+  }
+
+  function exportConfig() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+    const a = document.createElement("a");
+    a.href = dataStr;
+    a.download = "viral-refer-config.json";
+    a.click();
+    showToast("📤 Config exported");
+  }
+
+  function trackBannerClick() {
+    config.analytics.bannerClicks++;
+    trackEvent("Banner Clicked", "", { 
+      method: "BANNER_CLICK", 
+      ref: referralLink 
+    });
+    saveConfig();
+    showToast("Banner click tracked 📈");
+  }
 
   const adminTabStyle = document.createElement('style');
   adminTabStyle.innerHTML = `.admin-tab { padding: 1.25rem 2rem; font-weight: 600; border-bottom: 2px solid transparent; transition: all 0.2s; } .admin-tab-active { border-bottom: 3px solid rgb(var(--primary)); color: rgb(var(--primary)); }`;
