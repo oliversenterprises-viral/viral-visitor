@@ -70,7 +70,6 @@
     </div>
   </div>
 </nav>
-
 <div class="pt-24 pb-16 max-w-6xl mx-auto px-6">
   <!-- HERO -->
   <div class="hero-bg rounded-3xl p-12 md:p-20 text-center relative overflow-hidden">
@@ -856,7 +855,7 @@
       btn.className = 'mt-6 px-8 py-4 bg-violet-600 hover:bg-violet-500 text-white rounded-2xl font-semibold flex items-center gap-2';
       btn.innerHTML = '🔥 Send Test Plausible Event';
       btn.onclick = () => {
-        trackEvent("Test Event", "Manual test from admin panel");
+        trackEvent("Share", "Manual test from admin panel");
         showToast("✅ Test event sent to Plausible!");
       };
       document.getElementById('tab-content-2').appendChild(btn);
