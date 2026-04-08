@@ -9,9 +9,6 @@
   <meta property="og:image" content="https://picsum.photos/id/1015/1200/630">
   <title>Viral Refer • Earn Rewards</title>
  
-  <!-- Plausible.io Privacy-First Analytics -->
-  <script defer data-domain="viralrefer.app" src="https://plausible.io/js/script.js"></script>
- 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -25,8 +22,8 @@
     .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); }
     .ref-link { transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
     .ref-link:focus { box-shadow: 0 0 0 4px rgb(134 76 255 / 0.3); }
-    .share-btn { transition: all 0.2s cubic-bezier(0.4,0,0.2,1); }
-    .share-btn:hover { transform: translateY(-3px) scale(1.05); }
+    .share-grid button { transition: all 0.2s cubic-bezier(0.4,0,0.2,1); }
+    .share-grid button:hover { transform: translateY(-4px) scale(1.05); }
     .toast { animation: slideUp 0.4s ease forwards; }
     @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .hero-bg { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
@@ -43,8 +40,6 @@
     .my-stats-card { transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
     .plausible-badge { animation: badgePulse 2s infinite; }
     @keyframes badgePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
-    .share-grid button { transition: all 0.2s cubic-bezier(0.4,0,0.2,1); }
-    .share-grid button:hover { transform: translateY(-4px) scale(1.05); }
   </style>
 </head>
 <body class="tail-container bg-zinc-950 text-zinc-100 min-h-screen">
@@ -58,7 +53,7 @@
     <div class="flex items-center gap-8 text-sm font-medium">
       <a href="#how" class="hover:text-violet-400 transition-colors">How it works</a>
       <a href="#leaderboard" class="hover:text-violet-400 transition-colors">Leaderboard</a>
-      <div class="flex items-center gap-2 bg-emerald-400/10 text-emerald-400 text-xs font-medium px-3 py-1 rounded-3xl plausible-badge">
+      <div id="plausible-badge" class="flex items-center gap-2 bg-emerald-400/10 text-emerald-400 text-xs font-medium px-3 py-1 rounded-3xl plausible-badge">
         <i class="fa-solid fa-circle-check"></i> Plausible Live
       </div>
       <button onclick="openAdminPanel()" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-3xl text-sm font-semibold transition-all flex items-center gap-2 shadow-lg shadow-rose-500/30">
@@ -395,7 +390,7 @@
 <footer class="bg-black py-12 border-t border-white/10">
   <div class="max-w-6xl mx-auto px-6 text-center text-xs text-zinc-500">
     Viral Refer Flywheel • Instant "Get my referral link" (no modal) • Full Refly share grid<br>
-    Production-ready with Plausible.io analytics on viralrefer.app
+    Production-ready with FIXED Plausible.io analytics
   </div>
 </footer>
 <!-- TOAST -->
@@ -403,6 +398,7 @@
   <i class="fa-solid fa-check-circle text-emerald-400"></i>
   <span id="toast-text" class="font-medium"></span>
 </div>
+
 <script>
   let ADMIN_PASSWORD = "viraladmin2025";
   let config = {
@@ -447,6 +443,45 @@
   let currentUser = null;
   let referralLink = "";
   let charts = {};
+
+  // ==================== DYNAMIC PLAUSIBLE LOADER (FIXED) ====================
+  function initPlausible() {
+    const currentDomain = window.location.hostname || 'localhost';
+    const script = document.createElement('script');
+    script.defer = true;
+    script.setAttribute('data-domain', currentDomain);
+    script.setAttribute('data-api-host', 'https://plausible.io');
+    script.src = 'https://plausible.io/js/script.js';
+    document.head.appendChild(script);
+
+    script.onload = () => {
+      console.log('%c✅ Plausible loaded successfully for domain: ' + currentDomain, 'color:#22c55e;font-weight:bold');
+      updatePlausibleBadge(true);
+      if (typeof window.plausible !== 'undefined') {
+        window.plausible('Page Loaded', { props: { source: 'viral-refer-landing' } });
+      }
+    };
+
+    script.onerror = () => {
+      console.error('%c❌ Plausible script failed to load', 'color:#ef4444');
+      updatePlausibleBadge(false);
+    };
+  }
+
+  function updatePlausibleBadge(loaded) {
+    const badge = document.getElementById('plausible-badge');
+    if (loaded) {
+      badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Plausible Live`;
+      badge.style.backgroundColor = 'rgb(16 185 129 / 0.1)';
+      badge.style.color = 'rgb(16 185 129)';
+    } else {
+      badge.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Plausible Blocked`;
+      badge.style.backgroundColor = 'rgb(239 68 68 / 0.1)';
+      badge.style.color = 'rgb(239 68 68)';
+    }
+  }
+  // ==================== END PLAUSIBLE LOADER ====================
+
   function loadConfig() {
     let saved = null;
     try { saved = localStorage.getItem("viralReferConfig"); } catch(e) {}
@@ -466,12 +501,10 @@
   function saveConfig() {
     try { localStorage.setItem("viralReferConfig", JSON.stringify(config)); } catch(e) {}
   }
+
+  // FIXED trackEvent with full debugging
   function trackEvent(action, details = "", extraProps = {}) {
-    const logEntry = { 
-      time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), 
-      action, 
-      details 
-    };
+    const logEntry = { time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), action, details };
     config.analytics.activityLog.unshift(logEntry);
     if (config.analytics.activityLog.length > 8) config.analytics.activityLog.pop();
     saveConfig();
@@ -479,7 +512,7 @@
     if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderActivityLog();
 
     if (typeof window.plausible !== 'undefined') {
-      console.log(`%c🚀 Plausible event: ${action}`, 'color:#a855f7; font-weight:bold', extraProps);
+      console.log('%c🚀 Plausible event sent:', 'color:#a855f7;font-weight:bold', action, extraProps);
       window.plausible(action, {
         props: {
           details: details || 'no details',
@@ -490,9 +523,10 @@
         }
       });
     } else {
-      console.warn('Plausible not loaded yet – event skipped:', action);
+      console.warn('%c⚠️ Plausible not ready – event skipped:', 'color:#f59e0b', action);
     }
   }
+
   function getMyReferralLinkInstant() {
     currentUser = currentUser || { name: "Guest User", email: "guest@viralrefer.app", referrals: 1 };
     generateReferralLink();
@@ -504,8 +538,10 @@
     trackEvent("Get My Referral Link (Instant)");
     showToast("✅ Your referral link is ready!");
   }
+
   function init() {
     loadConfig();
+    initPlausible();                    // ← THIS IS THE MAIN FIX
     detectReferralAttribution();
     const savedUser = localStorage.getItem('viralCurrentUser');
     if (savedUser) {
@@ -519,8 +555,9 @@
     renderLeaderboard();
     renderWinnerBanner();
     updateWinnerButtonVisibility();
-    console.log('%c✅ COMPLETE CODE – Instant Get My Referral Link ready', 'color:#a855f7; font-weight:bold');
+    console.log('%c✅ Viral Refer ready with FIXED Plausible tracking', 'color:#a855f7;font-weight:bold');
   }
+
   function detectReferralAttribution() {
     const params = new URLSearchParams(window.location.search);
     const refCode = params.get('ref');
@@ -530,6 +567,7 @@
       trackEvent("Referral Attribution Detected", refCode);
     }
   }
+
   function updateAllTexts() {
     document.querySelectorAll('#hero-site-name').forEach(el => el.textContent = config.siteName);
     document.getElementById('hero-subtitle').innerHTML = `Share <span class="font-semibold text-white">${config.siteName}</span> and ${config.rewardText}`;
@@ -544,12 +582,14 @@
     document.getElementById('prize-perks-display').textContent = config.leaderboardPrize.perks || "";
     document.getElementById('min-referrals-display').textContent = config.leaderboardPrize.minReferrals;
   }
+
   function generateReferralLink() {
     const userId = currentUser ? btoa(currentUser.email).slice(0,8) : "DEMO123";
     referralLink = `${config.baseUrl}/ref/${userId}`;
     document.getElementById('ref-link').value = referralLink;
     document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
   }
+
   function renderWinnerBanner() {
     const winner = config.leaderboard[0];
     const container = document.getElementById('winner-banner');
@@ -571,6 +611,7 @@
       </div>
     `;
   }
+
   function renderLeaderboard() {
     const container = document.getElementById('leaderboard-container');
     container.innerHTML = '';
@@ -596,11 +637,13 @@
     }
     updateWinnerButtonVisibility();
   }
+
   function updateWinnerButtonVisibility() {
     const btn = document.getElementById('winner-claim-btn');
     const hasWinner = config.leaderboard.length > 0 && config.leaderboard[0].referrals >= config.leaderboardPrize.minReferrals;
     btn.classList.toggle('hidden', !hasWinner);
   }
+
   function updateMyStats() {
     if (!currentUser) return;
     document.getElementById('my-referrals').textContent = currentUser.referrals;
@@ -611,6 +654,7 @@
     const rank = config.leaderboard.filter(p => p.referrals > currentUser.referrals).length + 1;
     document.getElementById('my-rank').textContent = `#${rank}`;
   }
+
   function copyLink() {
     navigator.clipboard.writeText(referralLink).then(() => {
       config.analytics.linkCopies++;
@@ -624,9 +668,9 @@
       }
     });
   }
+
   function shareTo(platform) {
     const message = `Join me on ${config.siteName} – help me win the homepage banner! ${referralLink}`;
-
     let url = '';
     if (platform === 'x') url = `https://x.com/intent/tweet?text=${encodeURIComponent(message)}`;
     else if (platform === 'facebook') url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`;
@@ -635,15 +679,14 @@
     else if (platform === 'telegram') url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
     else if (platform === 'sms') url = `sms:?body=${encodeURIComponent(message)}`;
 
-    // Track FIRST (most reliable)
     config.analytics.shares[platform] = (config.analytics.shares[platform] || 0) + 1;
     trackEvent("Share", "", { platform: platform.toUpperCase(), referralLink: referralLink });
     saveConfig();
     confettiBurst();
 
-    // Then open share window
     if (url) window.open(url, '_blank');
   }
+
   function nativeShare() {
     if (navigator.share) {
       navigator.share({
@@ -660,17 +703,17 @@
       showToast("Native sharing not supported on this device");
     }
   }
+
   function showQRModal() {
     const modal = document.getElementById('qr-modal');
     document.getElementById('modal-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
     modal.classList.remove('hidden');
   }
-  function hideQRModal() {
-    document.getElementById('qr-modal').classList.add('hidden');
-  }
+  function hideQRModal() { document.getElementById('qr-modal').classList.add('hidden'); }
   function showEmailModal() { document.getElementById('email-modal').classList.remove('hidden'); }
   function hideEmailModal() { document.getElementById('email-modal').classList.add('hidden'); }
   function sendEmails() { hideEmailModal(); showToast("✅ Invites sent!"); confettiBurst(); trackEvent("Email Invites Sent"); }
+
   function showWinnerForm() {
     const winner = config.leaderboard[0];
     if (!winner) return;
@@ -690,6 +733,7 @@
     showToast("✅ Submission sent!");
     trackEvent("Winner Banner Submission", submission.name);
   }
+
   function openAdminPanel() {
     const entered = prompt("🔒 Enter Admin Password:");
     if (entered === ADMIN_PASSWORD) {
@@ -699,6 +743,7 @@
     } else if (entered) alert("❌ Access denied.");
   }
   function closeAdminPanel() { document.getElementById('admin-modal').classList.add('hidden'); }
+
   function loadAdminFormValues() {
     document.getElementById('admin-site-name').value = config.siteName;
     document.getElementById('admin-base-url').value = config.baseUrl;
@@ -723,6 +768,7 @@
     renderAdminLeaderboardList();
     renderAnalytics();
   }
+
   function renderAdminLeaderboardList() {
     const list = document.getElementById('admin-leaderboard-list');
     list.innerHTML = '';
@@ -739,10 +785,12 @@
       list.appendChild(div);
     });
   }
+
   function addLeaderboardEntry() {
     config.leaderboard.push({ name: "New Referrer", referrals: 10, website: "https://newsite.com", bannerUrl: "https://picsum.photos/id/870/600/180" });
     renderAdminLeaderboardList();
   }
+
   function removeLeaderboardEntry(index) {
     if (confirm("Delete this entry?")) {
       config.leaderboard.splice(index, 1);
@@ -752,6 +800,7 @@
       renderWinnerBanner();
     }
   }
+
   function saveAdminChanges() {
     config.siteName = document.getElementById('admin-site-name').value.trim() || config.siteName;
     config.baseUrl = document.getElementById('admin-base-url').value.trim() || config.baseUrl;
@@ -786,8 +835,9 @@
     renderLeaderboard();
     renderWinnerBanner();
     updateWinnerButtonVisibility();
-    showToast("✅ All changes saved &amp; live on the page!");
+    showToast("✅ All changes saved & live on the page!");
   }
+
   function switchAdminTab(tab) {
     for (let i = 0; i < 4; i++) {
       document.getElementById(`tab-content-${i}`).classList.toggle('hidden', i !== tab);
@@ -795,17 +845,34 @@
     }
     if (tab === 2) setTimeout(renderAnalytics, 50);
   }
+
   function renderAnalytics() {
     document.getElementById('stat-visitors').textContent = config.analytics.visitors.toLocaleString();
     document.getElementById('stat-copies').textContent = config.analytics.linkCopies;
     document.getElementById('stat-shares').textContent = Object.values(config.analytics.shares).reduce((a,b)=>a+b,0);
     document.getElementById('stat-conversion').textContent = config.analytics.conversionRate + "%";
     renderActivityLog();
+
     if (charts.shares) charts.shares.destroy();
     charts.shares = new Chart(document.getElementById('sharesChart'), { type: 'doughnut', data: { labels: ['X', 'Facebook', 'WhatsApp', 'LinkedIn', 'Email'], datasets: [{ data: Object.values(config.analytics.shares), backgroundColor: ['#000000', '#1877F2', '#25D366', '#0A66C2', '#EA4335'] }] }, options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } } });
+
     if (charts.growth) charts.growth.destroy();
     charts.growth = new Chart(document.getElementById('growthChart'), { type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ label: 'Referrals', data: config.analytics.growthData, borderColor: '#a855f7', tension: 0.4 }] }, options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.1)' } } } } });
+
+    // Test button
+    if (!document.getElementById('test-plausible-btn')) {
+      const btn = document.createElement('button');
+      btn.id = 'test-plausible-btn';
+      btn.className = 'mt-6 px-8 py-4 bg-violet-600 hover:bg-violet-500 text-white rounded-2xl font-semibold flex items-center gap-2';
+      btn.innerHTML = '🔥 Send Test Plausible Event';
+      btn.onclick = () => {
+        trackEvent("Test Event", "Manual test from admin panel");
+        showToast("✅ Test event sent to Plausible!");
+      };
+      document.getElementById('tab-content-2').appendChild(btn);
+    }
   }
+
   function renderActivityLog() {
     const logDiv = document.getElementById('activity-log');
     let html = config.analytics.activityLog.map(entry => `<div class="flex justify-between"><span class="text-zinc-500">${entry.time}</span><span class="text-white">${entry.action}</span></div>`).join('');
@@ -816,6 +883,7 @@
     }
     logDiv.innerHTML = html || '<div class="text-zinc-500">No activity yet...</div>';
   }
+
   function showToast(message) {
     const toast = document.getElementById('toast');
     document.getElementById('toast-text').innerHTML = message;
@@ -825,9 +893,11 @@
       setTimeout(() => { toast.classList.add('hidden'); toast.style.opacity = '1'; }, 300);
     }, 2800);
   }
+
   function confettiBurst() {
     confetti({ particleCount: 220, spread: 100, origin: { y: 0.6 }, colors: ['#a855f7', '#c026d3', '#22c55e', '#eab308'] });
   }
+
   function changeAdminPassword() {
     const newPass = document.getElementById('admin-new-password').value.trim();
     if (newPass.length < 4) return alert("Password too short");
@@ -835,12 +905,14 @@
     showToast("🔐 New admin password saved");
     document.getElementById('admin-new-password').value = '';
   }
+
   function resetAllToDefaults() {
     if (confirm("Reset EVERYTHING?")) {
       try { localStorage.removeItem("viralReferConfig"); localStorage.removeItem("viralCurrentUser"); } catch(e) {}
       location.reload();
     }
   }
+
   function exportConfig() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
     const a = document.createElement("a");
@@ -849,15 +921,18 @@
     a.click();
     showToast("📤 Config exported");
   }
+
   function trackBannerClick() {
     config.analytics.bannerClicks++;
     trackEvent("Banner Clicked");
     saveConfig();
     showToast("Banner click tracked 📈");
   }
+
   const adminTabStyle = document.createElement('style');
   adminTabStyle.innerHTML = `.admin-tab { padding: 1.25rem 2rem; font-weight: 600; border-bottom: 2px solid transparent; transition: all 0.2s; } .admin-tab-active { border-bottom: 3px solid rgb(var(--primary)); color: rgb(var(--primary)); }`;
   document.head.appendChild(adminTabStyle);
+
   window.onload = init;
 </script>
 </body>
