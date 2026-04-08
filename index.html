@@ -509,6 +509,7 @@
 
   function getMyReferralLinkInstant() {
     currentUser = currentUser || { name: "Guest User", email: "guest@viralrefer.app", referrals: 1 };
+    localStorage.setItem('viralCurrentUser', JSON.stringify(currentUser));
     generateReferralLink();
     document.getElementById('my-stats').classList.remove('hidden');
     document.getElementById('current-user-name').textContent = currentUser.name;
@@ -653,6 +654,7 @@
       if (currentUser) {
         currentUser.referrals = (currentUser.referrals || 0) + 1;
         updateMyStats();
+        localStorage.setItem('viralCurrentUser', JSON.stringify(currentUser));
       }
     });
   }
@@ -738,7 +740,7 @@
     document.getElementById('admin-site-name').value = config.siteName;
     document.getElementById('admin-base-url').value = config.baseUrl;
     document.getElementById('admin-reward-text').value = config.rewardText;
-    const hexColor = "#" + config.primaryColor.replace(/\s/g, '').split(',').map(n => parseInt(n).toString(16).padStart(2,'0')).join('');
+    const hexColor = "#" + config.primaryColor.split(' ').map(n => parseInt(n).toString(16).padStart(2,'0')).join('');
     const colorInput = document.getElementById('admin-primary-color');
     colorInput.value = hexColor;
     document.getElementById('color-preview').style.backgroundColor = hexColor;
