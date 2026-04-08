@@ -498,11 +498,11 @@
     }
     document.documentElement.style.setProperty('--primary', config.primaryColor);
   }
+
   function saveConfig() {
     try { localStorage.setItem("viralReferConfig", JSON.stringify(config)); } catch(e) {}
   }
 
-  // FIXED trackEvent with full debugging
   function trackEvent(action, details = "", extraProps = {}) {
     const logEntry = { time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), action, details };
     config.analytics.activityLog.unshift(logEntry);
@@ -541,7 +541,7 @@
 
   function init() {
     loadConfig();
-    initPlausible();                    // ← THIS IS THE MAIN FIX
+    initPlausible();
     detectReferralAttribution();
     const savedUser = localStorage.getItem('viralCurrentUser');
     if (savedUser) {
@@ -588,6 +588,15 @@
     referralLink = `${config.baseUrl}/ref/${userId}`;
     document.getElementById('ref-link').value = referralLink;
     document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
+  }
+
+  function generateNewCode() {
+    const userId = currentUser ? btoa(currentUser.email + Date.now()).slice(0,8) : "NEW" + Math.floor(Math.random()*9999);
+    referralLink = `${config.baseUrl}/ref/${userId}`;
+    document.getElementById('ref-link').value = referralLink;
+    document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
+    showToast("✅ New referral code generated!");
+    trackEvent("New Referral Code Generated");
   }
 
   function renderWinnerBanner() {
@@ -709,7 +718,11 @@
     document.getElementById('modal-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
     modal.classList.remove('hidden');
   }
-  function hideQRModal() { document.getElementById('qr-modal').classList.add('hidden'); }
+
+  function hideQRModal() {
+    document.getElementById('qr-modal').classList.add('hidden');
+  }
+
   function showEmailModal() { document.getElementById('email-modal').classList.remove('hidden'); }
   function hideEmailModal() { document.getElementById('email-modal').classList.add('hidden'); }
   function sendEmails() { hideEmailModal(); showToast("✅ Invites sent!"); confettiBurst(); trackEvent("Email Invites Sent"); }
@@ -720,7 +733,9 @@
     document.getElementById('winner-name').value = winner.name;
     document.getElementById('winner-modal').classList.remove('hidden');
   }
+
   function hideWinnerForm() { document.getElementById('winner-modal').classList.add('hidden'); }
+
   function submitWinnerForm() {
     const email = document.getElementById('winner-email').value.trim();
     const bannerUrl = document.getElementById('winner-banner-url').value.trim();
@@ -742,6 +757,7 @@
       switchAdminTab(0);
     } else if (entered) alert("❌ Access denied.");
   }
+
   function closeAdminPanel() { document.getElementById('admin-modal').classList.add('hidden'); }
 
   function loadAdminFormValues() {
@@ -859,7 +875,6 @@
     if (charts.growth) charts.growth.destroy();
     charts.growth = new Chart(document.getElementById('growthChart'), { type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ label: 'Referrals', data: config.analytics.growthData, borderColor: '#a855f7', tension: 0.4 }] }, options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.1)' } } } } });
 
-    // Test button
     if (!document.getElementById('test-plausible-btn')) {
       const btn = document.createElement('button');
       btn.id = 'test-plausible-btn';
