@@ -484,22 +484,34 @@
   }
 
   function trackEvent(action, details = "", extraProps = {}) {
-    const logEntry = { time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), action, details };
+    // Log for your internal analytics
+    const logEntry = { 
+      time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), 
+      action, 
+      details 
+    };
     config.analytics.activityLog.unshift(logEntry);
     if (config.analytics.activityLog.length > 8) config.analytics.activityLog.pop();
     saveConfig();
 
-    if (!document.getElementById('tab-content-2').classList.contains('hidden')) renderActivityLog();
+    if (!document.getElementById('tab-content-2').classList.contains('hidden')) {
+      renderActivityLog();
+    }
 
+    // Send to Plausible with your custom properties
     if (typeof window.plausible !== 'undefined') {
       console.log('%c🚀 Plausible event sent:', 'color:#a855f7;font-weight:bold', action, extraProps);
+      
       window.plausible(action, {
         props: {
           details: details || 'no details',
           pageUrl: window.location.href,
           referrer: document.referrer || 'direct',
           userEmail: currentUser ? currentUser.email : 'anonymous',
-          ...extraProps
+          // Your two custom properties (exactly as you created them in Plausible)
+          ref: extraProps.ref || referralLink || 'unknown',
+          method: extraProps.method || 'unknown',
+          ...extraProps   // any extra props you pass will still be included
         }
       });
     } else {
@@ -516,7 +528,11 @@
     updateMyStats();
     document.getElementById('referral-section').scrollIntoView({ behavior: 'smooth' });
     confettiBurst();
-    trackEvent("Get My Referral Link (Instant)");
+    
+    trackEvent("Get My Referral Link (Instant)", "", { 
+      method: "BUTTON", 
+      ref: referralLink 
+    });
     showToast("✅ Your referral link is ready!");
   }
 
@@ -544,7 +560,10 @@
     if (refCode) {
       document.getElementById('referral-attribution').classList.remove('hidden');
       document.getElementById('referrer-name').textContent = "Previous Referrer";
-      trackEvent("Referral Attribution Detected", refCode);
+      trackEvent("Referral Attribution Detected", refCode, { 
+        method: "REFERRAL_LINK", 
+        ref: refCode 
+      });
     }
   }
 
@@ -576,7 +595,10 @@
     document.getElementById('ref-link').value = referralLink;
     document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
     showToast("✅ New referral code generated!");
-    trackEvent("New Referral Code Generated");
+    trackEvent("New Referral Code Generated", "", { 
+      method: "NEW_CODE", 
+      ref: referralLink 
+    });
   }
 
   function renderWinnerBanner() {
@@ -647,7 +669,10 @@
   function copyLink() {
     navigator.clipboard.writeText(referralLink).then(() => {
       config.analytics.linkCopies++;
-      trackEvent("Link Copied", referralLink);
+      trackEvent("Link Copied", referralLink, { 
+        method: "COPY", 
+        ref: referralLink 
+      });
       saveConfig();
       showToast("✅ Link copied to clipboard!");
       confettiBurst();
@@ -669,8 +694,14 @@
     else if (platform === 'telegram') url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
     else if (platform === 'sms') url = `sms:?body=${encodeURIComponent(message)}`;
 
+    const methodName = platform.toUpperCase();
+    
+    trackEvent("Share", referralLink, { 
+      method: methodName, 
+      ref: referralLink 
+    });
+
     config.analytics.shares[platform] = (config.analytics.shares[platform] || 0) + 1;
-    trackEvent(`Share - ${platform.toUpperCase()}`, "", { platform: platform.toUpperCase(), referralLink: referralLink });
     saveConfig();
     confettiBurst();
 
@@ -685,7 +716,10 @@
         url: referralLink
       })
       .then(() => {
-        trackEvent("Share - NATIVE", "", { platform: "NATIVE" });
+        trackEvent("Share", referralLink, { 
+          method: "NATIVE", 
+          ref: referralLink 
+        });
         confettiBurst();
       })
       .catch(() => {});
@@ -703,7 +737,15 @@
 
   function showEmailModal() { document.getElementById('email-modal').classList.remove('hidden'); }
   function hideEmailModal() { document.getElementById('email-modal').classList.add('hidden'); }
-  function sendEmails() { hideEmailModal(); showToast("✅ Invites sent!"); confettiBurst(); trackEvent("Email Invites Sent"); }
+  function sendEmails() {
+    hideEmailModal();
+    showToast("✅ Invites sent!");
+    confettiBurst();
+    trackEvent("Email Invites Sent", "", { 
+      method: "EMAIL", 
+      ref: referralLink 
+    });
+  }
 
   function showWinnerForm() {
     const winner = config.leaderboard[0];
@@ -717,13 +759,25 @@
     const email = document.getElementById('winner-email').value.trim();
     const bannerUrl = document.getElementById('winner-banner-url').value.trim();
     if (!email || !bannerUrl) return alert("Email and Banner URL are required");
-    const submission = { time: new Date().toLocaleString(), name: document.getElementById('winner-name').value, email, bannerUrl, message: document.getElementById('winner-message').value.trim() || "No message" };
+    
+    const submission = { 
+      time: new Date().toLocaleString(), 
+      name: document.getElementById('winner-name').value, 
+      email, 
+      bannerUrl, 
+      message: document.getElementById('winner-message').value.trim() || "No message" 
+    };
+    
     config.analytics.submissions.unshift(submission);
     if (config.analytics.submissions.length > 10) config.analytics.submissions.pop();
     saveConfig();
+    
     hideWinnerForm();
     showToast("✅ Submission sent!");
-    trackEvent("Winner Banner Submission", submission.name);
+    trackEvent("Winner Banner Submission", submission.name, { 
+      method: "WINNER_FORM", 
+      ref: referralLink 
+    });
   }
 
   function openAdminPanel() {
@@ -857,7 +911,7 @@
       btn.className = 'mt-6 px-8 py-4 bg-violet-600 hover:bg-violet-500 text-white rounded-2xl font-semibold flex items-center gap-2';
       btn.innerHTML = '🔥 Send Test Plausible Event';
       btn.onclick = () => {
-        trackEvent("Share - TEST", "", { platform: "TEST" });
+        trackEvent("Share", "", { method: "TEST", ref: referralLink });
         showToast("✅ Test event sent to Plausible!");
       };
       document.getElementById('tab-content-2').appendChild(btn);
@@ -915,7 +969,10 @@
 
   function trackBannerClick() {
     config.analytics.bannerClicks++;
-    trackEvent("Banner Clicked");
+    trackEvent("Banner Clicked", "", { 
+      method: "BANNER_CLICK", 
+      ref: referralLink 
+    });
     saveConfig();
     showToast("Banner click tracked 📈");
   }
