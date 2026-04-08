@@ -484,7 +484,6 @@
   }
 
   function trackEvent(action, details = "", extraProps = {}) {
-    // Log for your internal analytics
     const logEntry = { 
       time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), 
       action, 
@@ -498,7 +497,6 @@
       renderActivityLog();
     }
 
-    // Send to Plausible with your custom properties
     if (typeof window.plausible !== 'undefined') {
       console.log('%c🚀 Plausible event sent:', 'color:#a855f7;font-weight:bold', action, extraProps);
       
@@ -508,10 +506,9 @@
           pageUrl: window.location.href,
           referrer: document.referrer || 'direct',
           userEmail: currentUser ? currentUser.email : 'anonymous',
-          // Your two custom properties (exactly as you created them in Plausible)
           ref: extraProps.ref || referralLink || 'unknown',
           method: extraProps.method || 'unknown',
-          ...extraProps   // any extra props you pass will still be included
+          ...extraProps
         }
       });
     } else {
@@ -732,8 +729,17 @@
     const modal = document.getElementById('qr-modal');
     document.getElementById('modal-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(referralLink)}`;
     modal.classList.remove('hidden');
+    
+    // Track QR Code opens in Plausible
+    trackEvent("QR Code Viewed", "", { 
+      method: "QR_CODE", 
+      ref: referralLink 
+    });
   }
-  function hideQRModal() { document.getElementById('qr-modal').classList.add('hidden'); }
+
+  function hideQRModal() { 
+    document.getElementById('qr-modal').classList.add('hidden'); 
+  }
 
   function showEmailModal() { document.getElementById('email-modal').classList.remove('hidden'); }
   function hideEmailModal() { document.getElementById('email-modal').classList.add('hidden'); }
