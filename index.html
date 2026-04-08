@@ -71,7 +71,7 @@
   </div>
 </nav>
 <div class="pt-24 pb-16 max-w-6xl mx-auto px-6">
-  <!-- HERO -->
+  <!-- HERO – INSTANT GET MY REFERRAL LINK (no modal) -->
   <div class="hero-bg rounded-3xl p-12 md:p-20 text-center relative overflow-hidden">
     <div class="max-w-2xl mx-auto">
       <div class="inline-flex items-center gap-2 bg-white/10 text-white text-xs font-medium px-4 py-2 rounded-3xl mb-6">
@@ -82,13 +82,13 @@
         <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400">Get your banner promoted.</span>
       </h1>
       <p id="hero-subtitle" class="text-xl text-zinc-400 mb-10 max-w-md mx-auto">Share <span id="hero-site-name" class="font-semibold text-white">YourSite</span> and the #1 referrer wins a full homepage banner promotion!</p>
+     
       <button onclick="getMyReferralLinkInstant()" class="px-10 py-6 bg-white text-zinc-950 font-semibold text-lg rounded-3xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-2xl shadow-violet-500/30 group">
         <i class="fa-solid fa-gift group-active:rotate-12 transition-transform"></i>
         Get my referral link
       </button>
     </div>
   </div>
-
   <!-- MY STATS PANEL -->
   <div id="my-stats" class="mt-8 glass border border-white/10 rounded-3xl p-8 hidden my-stats-card">
     <div class="flex justify-between items-center mb-6">
@@ -110,7 +110,6 @@
       </div>
     </div>
   </div>
-
   <!-- REFERRAL SECTION -->
   <div id="referral-section" class="mt-12 glass border border-white/10 rounded-3xl p-8 md:p-12 relative">
     <div id="referral-attribution" class="hidden mb-6 p-4 bg-emerald-400/10 border border-emerald-400/30 rounded-2xl text-center text-emerald-400 font-medium">
@@ -142,6 +141,7 @@
       </div>
       <div class="flex-1">
         <h3 class="text-lg font-semibold mb-6 flex items-center gap-2"><i class="fa-solid fa-share-nodes text-amber-400"></i> Share everywhere</h3>
+       
         <div class="share-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           <button onclick="copyLink()" class="flex flex-col items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 p-6 rounded-3xl text-white">
             <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-zinc-900"><i class="fa-solid fa-link text-2xl"></i></div>
@@ -187,7 +187,6 @@
       </div>
     </div>
   </div>
-
   <!-- WIN THE BANNER SPOTLIGHT -->
   <div class="mt-20 glass border border-white/10 rounded-3xl p-12 text-center">
     <div class="inline-flex items-center gap-2 bg-amber-400 text-zinc-950 text-xs font-bold px-6 py-2 rounded-3xl mb-6">
@@ -201,7 +200,6 @@
     </div>
     <p class="text-xs text-zinc-500 mt-4">The #1 referrer gets this exact banner featured on the homepage</p>
   </div>
-
   <!-- LIVE LEADERBOARD -->
   <div id="leaderboard" class="mt-20">
     <div class="flex items-center justify-between mb-10">
@@ -210,7 +208,6 @@
     </div>
     <div id="leaderboard-container" class="space-y-3"></div>
   </div>
-
   <!-- HOW IT WORKS -->
   <div id="how" class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
     <div class="glass border border-white/10 rounded-3xl p-8">
@@ -230,7 +227,6 @@
     </div>
   </div>
 </div>
-
 <!-- QR MODAL -->
 <div id="qr-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
   <div class="bg-zinc-900 rounded-3xl p-8 max-w-sm w-full mx-4 text-center">
@@ -239,7 +235,6 @@
     <button onclick="hideQRModal()" class="mt-8 px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white rounded-3xl font-semibold">Close</button>
   </div>
 </div>
-
 <!-- EMAIL MODAL -->
 <div id="email-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
   <div class="bg-zinc-900 rounded-3xl max-w-md w-full mx-4 overflow-hidden">
@@ -256,7 +251,6 @@
     </div>
   </div>
 </div>
-
 <!-- ADMIN PANEL -->
 <div id="admin-modal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center z-[300]">
   <div class="bg-zinc-900 rounded-3xl w-full max-w-5xl mx-6 max-h-[92vh] overflow-hidden flex flex-col">
@@ -374,7 +368,6 @@
     </div>
   </div>
 </div>
-
 <!-- WINNER MODAL -->
 <div id="winner-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[300]">
   <div class="bg-zinc-900 rounded-3xl max-w-lg w-full mx-4 overflow-hidden">
@@ -397,12 +390,10 @@
     </div>
   </div>
 </div>
-
 <!-- WINNER CLAIM BUTTON -->
 <button onclick="showWinnerForm()" id="winner-claim-btn" class="winner-btn fixed bottom-8 right-8 hidden bg-gradient-to-r from-amber-400 to-yellow-500 text-zinc-950 font-bold px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-3 z-[200]">
   <i class="fa-solid fa-trophy"></i> I'm the #1 Winner – Submit My Banner Now
 </button>
-
 <!-- FOOTER -->
 <footer class="bg-black py-12 border-t border-white/10">
   <div class="max-w-6xl mx-auto px-6 text-center text-xs text-zinc-500">
@@ -410,7 +401,6 @@
     Production-ready with official Plausible script
   </div>
 </footer>
-
 <!-- TOAST -->
 <div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-zinc-800 border border-white/20 text-white px-8 py-4 rounded-3xl flex items-center gap-3 shadow-2xl toast">
   <i class="fa-solid fa-check-circle text-emerald-400"></i>
@@ -668,7 +658,7 @@
     else if (platform === 'sms') url = `sms:?body=${encodeURIComponent(message)}`;
 
     config.analytics.shares[platform] = (config.analytics.shares[platform] || 0) + 1;
-    trackEvent("Share", "", { platform: platform.toUpperCase(), referralLink: referralLink });
+    trackEvent(`Share - ${platform.toUpperCase()}`, "", { platform: platform.toUpperCase(), referralLink: referralLink });
     saveConfig();
     confettiBurst();
 
@@ -683,7 +673,7 @@
         url: referralLink
       })
       .then(() => {
-        trackEvent("Share", "", { platform: "NATIVE" });
+        trackEvent("Share - NATIVE", "", { platform: "NATIVE" });
         confettiBurst();
       })
       .catch(() => {});
@@ -855,7 +845,7 @@
       btn.className = 'mt-6 px-8 py-4 bg-violet-600 hover:bg-violet-500 text-white rounded-2xl font-semibold flex items-center gap-2';
       btn.innerHTML = '🔥 Send Test Plausible Event';
       btn.onclick = () => {
-        trackEvent("Share", "Manual test from admin panel");
+        trackEvent("Share - TEST", "", { platform: "TEST" });
         showToast("✅ Test event sent to Plausible!");
       };
       document.getElementById('tab-content-2').appendChild(btn);
